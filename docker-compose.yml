@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  api:
+    build:
+      context: api/
+  db:
+    image: postgres:12.2-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ***REMOVED***
+      POSTGRES_USER: covidata
+      POSTGRES_DB: covidata

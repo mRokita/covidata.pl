@@ -5,8 +5,9 @@ from fastapi import FastAPI, status, HTTPException, Depends, Query, Path, \
 import uvicorn
 from sqlalchemy.orm import Session
 
-from app.database import SessionLocal
-from app import schemas, models
+from database import SessionLocal
+import schemas, models
+
 app = FastAPI()
 
 
