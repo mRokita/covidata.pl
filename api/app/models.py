@@ -7,7 +7,7 @@ class Region(Base):
     __tablename__ = 'regions'
 
     id = Column(Integer, primary_key=True, index=True)
-    is_poland = Column(Boolean, unique=True, index=True)
+    is_poland = Column(Boolean)
     name = Column(String, unique=True, index=True)
 
     day_reports = relationship('DayReport', back_populates='region')

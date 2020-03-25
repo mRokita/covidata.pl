@@ -21,6 +21,13 @@ class Region(RegionBase):
         orm_mode = True
 
 
+class RegionSmall(RegionBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
 class DayReportBase(BaseModel):
     date: date
     total_cases: int = 0
