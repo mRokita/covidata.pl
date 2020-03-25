@@ -1,7 +1,7 @@
 from typing import List
 
 from pydantic import BaseModel
-from datetime import date
+import datetime
 
 
 class RegionBase(BaseModel):
@@ -29,7 +29,7 @@ class RegionSmall(RegionBase):
 
 
 class DayReportBase(BaseModel):
-    date: date
+    date: datetime.date = datetime.date.today()
     total_cases: int = 0
     total_deaths: int = 0
 
