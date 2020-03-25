@@ -1,6 +1,7 @@
 from typing import List
 
-from fastapi import FastAPI, status, HTTPException, Depends
+from fastapi import FastAPI, status, HTTPException, Depends, Query, Path, \
+    Header
 import uvicorn
 from sqlalchemy.orm import Session
 
@@ -23,16 +24,21 @@ async def root():
 
 
 @app.get('/api/v1/regions', response_model=List[schemas.Region])
-async def regions(only_poland: bool = False, db: Session = Depends(get_db)):
-    return db.query(models.Region).filter(models.Region.is_poland==only_poland).all()
+async def regions(
+        only_poland: bool = Query(False,
+                                  description="Load only regions of Poland"),
+        db: Session = Depends(get_db)):
+    regions = db.query(models.Region)
+    if only_poland:
+        regions = regions.filter(models.Region.is_poland == True)
+    return regions.all()
 
 
-@app.get('/api/v1/cases/{region_id}')
-async def cases(region_id: int):
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Cases not implemented yet",
-    )
+@app.get('/api/v1/day_reports/{region_id}', response_model=List[schemas.DayReport])
+async def day_reports(region_id: int, db: Session = Depends(get_db)):
+    day_reports = db.query(models.DayReport).filter(
+        models.DayReport.region_id == region_id)
+    return day_reports.all()
 
 
 if __name__ == '__main__':

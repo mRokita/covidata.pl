@@ -20,6 +20,7 @@ class Region(RegionBase):
     class Config:
         orm_mode = True
 
+
 class DayReportBase(BaseModel):
     date: date
     total_cases: int = 0
@@ -27,12 +28,16 @@ class DayReportBase(BaseModel):
 
 
 class DayReportCreate(DayReportBase):
-    region_id: int
+    pass
 
 
 class DayReport(DayReportBase):
     id: int
-    region: RegionBase
+    region_id: int
 
     class Config:
         orm_mode = True
+
+
+Region.update_forward_refs()
+
