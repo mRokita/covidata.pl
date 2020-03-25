@@ -6,7 +6,7 @@ import uvicorn
 import secrets
 
 from fastapi.security import HTTPBasicCredentials, OAuth2PasswordBearer, \
-    OAuth2PasswordRequestForm
+    OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -14,12 +14,12 @@ from database import SessionLocal
 import schemas, models
 
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/token')
+security = HTTPBearer()
 
 
-async def authenticated(token: str = Depends(oauth2_scheme)):
-    print(token)
-    if not secrets.compare_digest(token, '***REMOVED***'):
+async def authenticated(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    print(credentials.credentials)
+    if not secrets.compare_digest(credentials.credentials, '***REMOVED***'):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
         )
@@ -38,15 +38,6 @@ def get_db():
 async def root():
     return {'message': 'Hello, World!'}
 
-
-@app.post('/token')
-async def login(oauth_form: OAuth2PasswordRequestForm = Depends()):
-    if secrets.compare_digest(oauth_form.username, 'penis') and secrets.compare_digest(oauth_form.password, 'siusiak'):
-        return {'access_token': '***REMOVED***', 'token_type': 'bearer'}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-        )
 
 @app.delete('/api/v1/regions', response_model=schemas.RegionSmall)
 def delete_region(name: str = None, id: int = None,
@@ -89,6 +80,22 @@ async def create_region(region: schemas.RegionCreate,
         db.commit()
         db.refresh(db_region)
     return db_region
+
+
+@app.put('/api/v1/regions', response_model=schemas.RegionSmall)
+async def update_region(region: schemas.RegionSmall,
+                        db: Session = Depends(get_db),
+                        authenticated: bool = Depends(authenticated)):
+    db_region = db.query(models.Region).filter(models.Region.id == region.id).first()
+    if not db_region:
+        raise HTTPException(
+            status_code=404
+        )
+    db_region.name = region.name
+    db_region.is_poland = region.is_poland
+    db.commit()
+    return db_region
+
 
 @app.get('/api/v1/day_reports/{region_id}', response_model=List[schemas.DayReport])
 def day_reports(region_id: int, db: Session = Depends(get_db)):
