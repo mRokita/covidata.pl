@@ -1,0 +1,1 @@
+DATABASE_URL = "sqlite:////home/mrokita/covidata.pl/api/debug.db"
