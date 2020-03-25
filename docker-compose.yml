@@ -3,6 +3,8 @@ services:
   api:
     build:
       context: api/
+    ports:
+      - "83:80"
   db:
     image: postgres:12.2-alpine
     restart: always

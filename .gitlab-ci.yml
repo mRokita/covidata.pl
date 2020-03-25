@@ -1,0 +1,10 @@
+stages:
+  - deploy
+deploy:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - private-shell
+  script:
+    - docker-compose up -d --build
