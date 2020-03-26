@@ -31,11 +31,6 @@ def create_test_database():
     drop_database(url)
 
 
-def test_read_main():
-    response = client.get("/")
-    assert response.status_code == 200
-
-
 def test_regions():
     response = client.get("/api/v1/regions")
     assert response.status_code == 200
