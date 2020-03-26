@@ -34,11 +34,6 @@ def get_db():
         db.close()
 
 
-@app.get('/')
-async def root():
-    return {'message': 'Hello, World!'}
-
-
 @app.delete('/api/v1/regions', response_model=schemas.RegionSmall)
 def delete_region(name: str = None, id: int = None,
                   db: Session = Depends(get_db),
@@ -65,7 +60,7 @@ def regions(
     regions = db.query(models.Region)
     if only_poland:
         regions = regions.filter(models.Region.is_poland == True)
-    return regions.all()
+    return list(regions.all())
 
 
 @app.post('/api/v1/regions', response_model=schemas.RegionSmall)
