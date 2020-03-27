@@ -1,10 +1,23 @@
 version: '3.5'
 services:
   api:
+    image: 127.0.0.1:5000/covidata-api
     build:
       context: api/
     labels:
       - "traefik.enable=true"
+    deploy:
+      labels:
+      - "traefik.http.services.covidata-api.loadbalancer.server.port=80"
+      - "traefik.enable=true"
+      replicas: 2
+      update_config:
+        delay: 10s
+        parallelism: 1
+        failure_action: rollback
+    networks:
+      - default
+      - traefik
   db:
     image: postgres:12.2-alpine
     restart: always
@@ -12,3 +25,8 @@ services:
       POSTGRES_PASSWORD: ***REMOVED***
       POSTGRES_USER: covidata
       POSTGRES_DB: covidata
+    networks:
+      - default
+networks:
+  traefik:
+    external: true
