@@ -45,7 +45,6 @@ def downgrade():
     op.drop_index(op.f('ix_day_reports_id'), table_name='day_reports')
     op.drop_table('day_reports')
     op.drop_index(op.f('ix_regions_name'), table_name='regions')
-    op.drop_index(op.f('ix_regions_is_poland'), table_name='regions')
     op.drop_index(op.f('ix_regions_id'), table_name='regions')
     op.drop_table('regions')
     # ### end Alembic commands ###

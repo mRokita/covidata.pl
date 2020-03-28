@@ -39,7 +39,7 @@ async def shutdown():
 @app.delete("/api/v1/regions/{id}", response_model=Region)
 async def delete_region(id: int = None,  # noqa
                         auth: bool = Depends(authenticated)):  # noqa
-    query = regions.where(regions.c.id == id)
+    query = regions.select().where(regions.c.id == id)
     db_region = await database.fetch_one(query)
     if not db_region:
         raise HTTPException(
@@ -52,11 +52,11 @@ async def delete_region(id: int = None,  # noqa
 
 @app.get("/api/v1/regions", response_model=List[Region])
 async def read_regions(
-        only_poland: bool = Query(False,
-                                  description="Load only regions of Poland")):
+        is_poland: bool = Query(None,
+                                description="Filter by is_poland")):
     query = regions.select()
-    if only_poland:
-        query = query.where(regions.c.is_poland)
+    if is_poland is not None:
+        query = query.where(regions.c.is_poland == is_poland)
     return await database.fetch_all(query)
 
 
@@ -83,22 +83,16 @@ async def create_region(region: RegionCreate,
 
 @app.put("/api/v1/regions/{id}", response_model=Region)
 async def update_region(
-        id: int = Path(  # noqa
-            None,
-            description="Id of the region to update, "
-                        "leave empty to create new"
-        ),
-        *,
+        id: int, *,  # noqa
         region: RegionCreate = Body(...),
         auth: bool = Depends(authenticated)):  # noqa
-    if id is not None:
-        id_valid = await database.fetch_one(
-            regions.select().where(regions.c.id == id)
-        )
-        if not id_valid:
-            raise HTTPException(404)
-    return await database.fetch_one(
-        regions.update().where(regions.id == id).values(**region.dict())
+    id_valid = await database.fetch_one(
+        regions.select().where(regions.c.id == id)
+    )
+    if not id_valid:
+        raise HTTPException(404)
+    await database.fetch_one(
+        regions.update().where(regions.c.id == id).values(**region.dict())
     )
 
 
@@ -106,7 +100,7 @@ async def update_region(
          response_model=List[DayReport])
 async def read_day_reports(region_id: int):
     return await database.fetch_all(
-        day_reports.select().where(day_reports.region_id == region_id))
+        day_reports.select().where(day_reports.c.region_id == region_id))
 
 
 if __name__ == "__main__":
