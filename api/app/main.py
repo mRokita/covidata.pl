@@ -1,103 +1,113 @@
 from typing import List
 
-from fastapi import FastAPI, status, HTTPException, Depends, Query, Path, \
-    Header
+from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
 import secrets
 
-from fastapi.security import HTTPBasicCredentials, OAuth2PasswordBearer, \
-    OAuth2PasswordRequestForm, HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from fastapi.params import Path
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from starlette.responses import JSONResponse
 
-from database import SessionLocal
-import schemas, models
+from database import database
+from schemas import DayReport, Region, RegionCreate, HTTP409
+from tables import regions, day_reports
 
 app = FastAPI()
 security = HTTPBearer()
 
 
-async def authenticated(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    print(credentials.credentials)
-    if not secrets.compare_digest(credentials.credentials, '***REMOVED***'):
+async def authenticated(
+        credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not secrets.compare_digest(credentials.credentials,
+                                  "***REMOVED***"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED
         )
     return True
 
 
-def get_db():
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
+@app.on_event("startup")
+async def startup():
+    await database.connect()
 
 
-@app.delete('/api/v1/regions', response_model=schemas.RegionSmall)
-def delete_region(name: str = None, id: int = None,
-                  db: Session = Depends(get_db),
-                  authenticated: bool = Depends(authenticated)):
-    if not(name or id) or name and id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='either name or id is required'
-        )
-    db_region = db.query(models.Region).filter(
-        or_(models.Region.name==name, models.Region.id==id)).first()
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+
+@app.delete("/api/v1/regions/{id}", response_model=Region)
+async def delete_region(id: int = None,  # noqa
+                        auth: bool = Depends(authenticated)):  # noqa
+    query = regions.where(regions.c.id == id)
+    db_region = await database.fetch_one(query)
     if not db_region:
-        raise HTTPException(status_code=404)
-    db.delete(db_region)
-    db.commit()
+        raise HTTPException(
+            status_code=404,
+            detail="Region with matching ID not found"
+        )
+    await database.execute(regions.delete().where(regions.c.id == id))
     return db_region
 
 
-@app.get('/api/v1/regions', response_model=List[schemas.Region])
-def regions(
+@app.get("/api/v1/regions", response_model=List[Region])
+async def read_regions(
         only_poland: bool = Query(False,
-                                  description="Load only regions of Poland"),
-        db: Session = Depends(get_db)):
-    regions = db.query(models.Region)
+                                  description="Load only regions of Poland")):
+    query = regions.select()
     if only_poland:
-        regions = regions.filter(models.Region.is_poland == True)
-    return list(regions.all())
+        query = query.where(regions.c.is_poland)
+    return await database.fetch_all(query)
 
 
-@app.post('/api/v1/regions', response_model=schemas.RegionSmall)
-async def create_region(region: schemas.RegionCreate,
-                        db: Session = Depends(get_db),
-                        authenticated: bool = Depends(authenticated)):
-    db_region = db.query(models.Region).filter(models.Region.name == region.name).first()
-    if not db_region:
-        db_region = models.Region(
-            name=region.name, is_poland=region.is_poland)
-        db.add(db_region)
-        db.commit()
-        db.refresh(db_region)
-    return db_region
-
-
-@app.put('/api/v1/regions', response_model=schemas.RegionSmall)
-async def update_region(region: schemas.RegionSmall,
-                        db: Session = Depends(get_db),
-                        authenticated: bool = Depends(authenticated)):
-    db_region = db.query(models.Region).filter(models.Region.id == region.id).first()
-    if not db_region:
-        raise HTTPException(
-            status_code=404
+@app.post("/api/v1/regions", response_model=Region,
+          responses={409: {"model": HTTP409}})
+async def create_region(region: RegionCreate,
+                        auth: bool = Depends(authenticated)):  # noqa
+    """
+    Create a new region, raise exception if exists
+    """
+    db_region = await database.fetch_one(
+        query=regions.select(regions.c.name == region.name)
+    )
+    if db_region:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"conflicting_object": Region(**db_region).dict()}
         )
-    db_region.name = region.name
-    db_region.is_poland = region.is_poland
-    db.commit()
-    return db_region
+    db_region_id = await database.execute(
+        regions.insert(), values=region.dict()
+    )
+    return {**region.dict(), "id": db_region_id}
 
 
-@app.get('/api/v1/day_reports/{region_id}', response_model=List[schemas.DayReport])
-def day_reports(region_id: int, db: Session = Depends(get_db)):
-    day_reports = db.query(models.DayReport).filter(
-        models.DayReport.region_id == region_id)
-    return day_reports.all()
+@app.put("/api/v1/regions/{id}", response_model=Region)
+async def update_region(
+        id: int = Path(  # noqa
+            None,
+            description="Id of the region to update, "
+                        "leave empty to create new"
+        ),
+        *,
+        region: RegionCreate = Body(...),
+        auth: bool = Depends(authenticated)):  # noqa
+    if id is not None:
+        id_valid = await database.fetch_one(
+            regions.select().where(regions.c.id == id)
+        )
+        if not id_valid:
+            raise HTTPException(404)
+    return await database.fetch_one(
+        regions.update().where(regions.id == id).values(**region.dict())
+    )
 
 
-if __name__ == '__main__':
-    uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True, debug=True)
+@app.get("/api/v1/day_reports/{region_id}",
+         response_model=List[DayReport])
+async def read_day_reports(region_id: int):
+    return await database.fetch_all(
+        day_reports.select().where(day_reports.region_id == region_id))
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, debug=True)

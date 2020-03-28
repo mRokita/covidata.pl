@@ -14,6 +14,7 @@ DB_DATABASE = 'covidata'
 DB_HOST = 'localhost' if STAGE == 'DEBUG' else 'db'
 
 if not TESTING:
-    DATABASE_URL = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}'
+    DATABASE_URL = f'postgresql://' \
+                   f'{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}'
 else:
     DATABASE_URL = 'sqlite:////tmp/test.db'
