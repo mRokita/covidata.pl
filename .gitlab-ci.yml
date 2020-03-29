@@ -5,7 +5,7 @@ test:
   stage: test
   image: tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
   script:
-    - apk add --no-cache postgresql-libs postgresql-dev gcc python3-dev musl-dev
+    - apk add --no-cache postgresql-libs postgresql-dev gcc python3-dev libffi-devel musl-dev
     - apk add --no-cache --virtual .build-deps make gcc musl-dev postgresql-dev
     - cd api
     - python -m pip install -r requirements.txt --no-cache-dir
