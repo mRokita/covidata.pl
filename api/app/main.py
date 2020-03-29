@@ -1,8 +1,6 @@
 import datetime
-from datetime import timedelta
-from typing import List, Union
+from typing import List
 
-import jwt
 from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
 
