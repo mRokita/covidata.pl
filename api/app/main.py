@@ -1,35 +1,22 @@
 import datetime
-from typing import List
+from datetime import timedelta
+from typing import List, Union
 
+import jwt
 from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
-import secrets
 
 from fastapi.encoders import jsonable_encoder
-from fastapi.params import Path
-from fastapi.routing import serialize_response
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy import and_
-from sqlalchemy.dialects.mysql import insert
+from fastapi.security import OAuth2PasswordRequestForm
 from starlette.responses import JSONResponse
 
+from auth import authenticate_user, create_access_token, get_current_user
 from database import database
 from queries import filter_by_day_report, get_day_report, day_report_exists
 from schemas import DayReport, Region, RegionCreate, HTTP409, DayReportCreate
 from tables import regions, day_reports
 
 app = FastAPI()
-security = HTTPBearer()
-
-
-async def authenticated(
-        credentials: HTTPAuthorizationCredentials = Depends(security)):
-    if not secrets.compare_digest(credentials.credentials,
-                                  "***REMOVED***"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-        )
-    return True
 
 
 @app.on_event("startup")
@@ -42,9 +29,28 @@ async def shutdown():
     await database.disconnect()
 
 
+@app.post("/token")
+async def login_for_access_token(
+        form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+    access_token = create_access_token(
+        data={"sub": user.username}
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
 @app.delete("/api/v1/regions/{id}", response_model=Region)
-async def delete_region(id: int = None,  # noqa
-                        auth: bool = Depends(authenticated)):  # noqa
+async def delete_region(id: int = None,
+                        username: str = Depends(get_current_user)):
     query = regions.select().where(regions.c.id == id)
     db_region = await database.fetch_one(query)
     if not db_region:
@@ -69,7 +75,7 @@ async def read_regions(
 @app.post("/api/v1/regions", response_model=Region,
           responses={409: {"model": HTTP409}})
 async def create_region(region: RegionCreate,
-                        auth: bool = Depends(authenticated)):  # noqa
+                        username: str = Depends(get_current_user)):
     """
     Create a new region, raise exception if exists
     """
@@ -91,7 +97,7 @@ async def create_region(region: RegionCreate,
 async def update_region(
         id: int, *,  # noqa
         region: RegionCreate = Body(...),
-        auth: bool = Depends(authenticated)):  # noqa
+        auth: bool = Depends(get_current_user)):
     id_valid = await database.fetch_one(
         regions.select().where(regions.c.id == id)
     )
@@ -125,7 +131,7 @@ async def read_day_reports(region_id: int,
 async def create_or_update_day_report(
         region_id: int,
         day_report: DayReportCreate,
-        auth: bool = Depends(authenticated)):  # noqa
+        username: str = Depends(get_current_user)):
     status_code = 200
     if await day_report_exists(region_id, day_report.date):
         query = filter_by_day_report(day_reports.update(), region_id,
@@ -146,7 +152,7 @@ async def create_or_update_day_report(
             response_model=DayReport)
 async def delete_day_report(region_id: int,
                             date: datetime.date,
-                            auth: bool = Depends(authenticated)):  # noqa
+                            username: str = Depends(get_current_user)):
     await database.execute(
         filter_by_day_report(day_reports.delete(), region_id, date))
 

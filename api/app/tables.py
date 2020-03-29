@@ -5,6 +5,7 @@ from sqlalchemy.sql import TableClause
 
 from schemas import DayReport
 
+
 metadata = MetaData()
 
 regions = Table(
@@ -23,7 +24,13 @@ day_reports = Table(
     Column('total_deaths', Integer),
     Column('region_id', Integer, ForeignKey('regions.id', ondelete='CASCADE'),
            primary_key=True, index=True),
-    UniqueConstraint('date', 'region_id', name='unique_date_for_region')
+    UniqueConstraint('date', 'region_id')
 )
 
-
+users = Table(
+    'users',
+    metadata,
+    Column('id', Integer, primary_key=True, index=True),
+    Column('username', String, unique=True, index=True),
+    Column('hashed_password', String),
+)

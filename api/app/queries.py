@@ -4,8 +4,8 @@ from sqlalchemy import and_
 from sqlalchemy.sql import TableClause
 
 from database import database
-from schemas import DayReport
-from tables import day_reports
+from schemas import DayReport, User
+from tables import day_reports, users
 
 
 def filter_by_day_report(query: TableClause,
@@ -25,3 +25,9 @@ async def get_day_report(region_id: int, date: datetime.date) -> DayReport:
 
 async def day_report_exists(region_id: int, date: datetime.date) -> bool:
     return bool(await get_day_report(region_id, date))
+
+
+async def get_user(username: str):
+    db_user = await database.fetch_one(users.select().where(
+        users.c.username == username))
+    return User(**db_user)

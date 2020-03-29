@@ -1,24 +1,22 @@
-import datetime
+import os
 
+from starlette.config import environ
+environ['TESTING'] = 'True'
+# Switch database to sqlite before DATABASE_URL gets loaded
+import datetime
 import pytest
 from fastapi.encoders import jsonable_encoder
-from fastapi.testclient import TestClient
 from sqlalchemy_utils import drop_database, database_exists
-from starlette.config import environ
-
-# Switch database to sqlite before DATABASE_URL gets loaded
-from schemas import DayReport
-
-environ['TESTING'] = 'True'
-
-from database import database  # noqa
-from tables import regions, day_reports  # noqa
-from settings import DATABASE_URL  # noqa
-from main import app  # noqa
-from alembic.config import Config as AlembicConfig  # noqa
-from alembic.command import upgrade as alembic_upgrade  # noqa
-from alembic.command import downgrade as alembic_downgrade  # noqa
-from httpx import AsyncClient  # noqa
+from auth import authenticate_user, get_password_hash
+from schemas import DayReport, UserCreate
+from database import database
+from tables import regions, day_reports, users
+from settings import DATABASE_URL
+from main import app
+from alembic.config import Config as AlembicConfig
+from alembic.command import upgrade as alembic_upgrade
+from alembic.command import downgrade as alembic_downgrade
+from httpx import AsyncClient
 
 TEST_AUTH_TOKEN = '***REMOVED***'
 
@@ -38,6 +36,10 @@ day_reports_mocked = [
     {'date': datetime.date(year=2020, month=3, day=29),
      'total_cases': 20, 'total_deaths': 3, 'region_id': 3}
 ]
+
+
+if os.path.exists('/tmp/test.db'):
+    os.remove('/tmp/test.db')
 
 
 @pytest.fixture()
@@ -68,7 +70,7 @@ async def client():
 async def test_create_region(client, auth_headers):
     response = await client.post("/api/v1/regions",
                                  json={'name': 'test', 'is_poland': False})
-    assert response.status_code == 403
+    assert response.status_code == 401
     assert response.json() == {'detail': 'Not authenticated'}
 
     response = await client.post(
@@ -171,7 +173,7 @@ async def test_update_or_create_day_report(client, auth_headers):
     await database.execute_many(regions.insert(), values=regions_mocked)
     res = await client.put('/api/v1/regions/1/day_reports',
                            json={})
-    assert res.status_code == 403
+    assert res.status_code == 401
 
     res = await client.put('/api/v1/regions/1/day_reports', json={},
                            headers=auth_headers)
@@ -209,7 +211,7 @@ async def test_delete_day_report(client, auth_headers):
                                 values=day_reports_mocked)
 
     res = await client.delete('/api/v1/regions/1/day_reports/2020-03-28')
-    assert res.status_code == 403
+    assert res.status_code == 401
 
     res = await client.delete('/api/v1/regions/1/day_reports/2020-03-28',
                               headers=auth_headers)
@@ -227,4 +229,14 @@ async def test_delete_day_report(client, auth_headers):
     assert deserialize_day_reports(res.json()) == day_reports_mocked[2:]
 
 
-
+@pytest.mark.asyncio
+async def test_auth(client):
+    user_create = UserCreate(username='mrokita', password='mrokitax')
+    create_dict = user_create.dict()
+    del create_dict['password']
+    await database.execute(users.insert(),
+                           values={**create_dict,
+                                   'hashed_password': get_password_hash(
+                                       user_create.password)})
+    user = await authenticate_user(user_create.username, user_create.password)
+    assert user.username == 'mrokita'

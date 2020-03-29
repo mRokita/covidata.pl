@@ -34,3 +34,19 @@ class DayReport(DayReportBase):
 class HTTP409(BaseModel):
     conflicting_object: BaseModel
 
+
+class BaseUser(BaseModel):
+    username: str
+
+
+class UserCreate(BaseUser):
+    password: str
+
+
+class User(BaseUser):
+    id: int
+    hashed_password: str
+
+
+class TokenData(BaseModel):
+    username: str
