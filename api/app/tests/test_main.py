@@ -1,13 +1,18 @@
+import datetime
+
 import pytest
+from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from sqlalchemy_utils import drop_database, database_exists
 from starlette.config import environ
 
 # Switch database to sqlite before DATABASE_URL gets loaded
+from schemas import DayReport
+
 environ['TESTING'] = 'True'
 
 from database import database  # noqa
-from tables import regions  # noqa
+from tables import regions, day_reports  # noqa
 from settings import DATABASE_URL  # noqa
 from main import app  # noqa
 from alembic.config import Config as AlembicConfig  # noqa
@@ -21,6 +26,17 @@ regions_mocked = [
     {'id': 1, 'name': 'Mazowieckie', 'is_poland': True},
     {'id': 2, 'name': 'Małopolskie', 'is_poland': True},
     {'id': 3, 'name': 'Niemcy', 'is_poland': False}
+]
+
+day_reports_mocked = [
+    {'date': datetime.date(year=2020, month=3, day=28),
+     'total_cases': 1000, 'total_deaths': 20, 'region_id': 1},
+    {'date': datetime.date(year=2020, month=3, day=29),
+     'total_cases': 1200, 'total_deaths': 30, 'region_id': 1},
+    {'date': datetime.date(year=2020, month=3, day=28),
+     'total_cases': 10, 'total_deaths': 1, 'region_id': 3},
+    {'date': datetime.date(year=2020, month=3, day=29),
+     'total_cases': 20, 'total_deaths': 3, 'region_id': 3}
 ]
 
 
@@ -73,7 +89,7 @@ async def test_create_region(client, auth_headers):
         "409 is returned if already created"
 
     response = await client.get('/api/v1/regions')
-    assert response.json() == [{'id': 1, 'name': 'test', 'is_poland': False}],\
+    assert response.json() == [{'id': 1, 'name': 'test', 'is_poland': False}], \
         'Records have been successfully inserted'
     assert response.status_code == 200
 
@@ -124,3 +140,91 @@ async def test_delete_region(client, auth_headers):
     response = await client.get('/api/v1/regions')
     assert response.status_code == 200
     assert response.json() == regions_mocked[:1] + regions_mocked[2:3]
+
+
+def deserialize_day_report(json):
+    return DayReport(**json).dict()
+
+
+def deserialize_day_reports(json):
+    return [deserialize_day_report(r) for r in json]
+
+
+@pytest.mark.asyncio
+async def test_read_day_reports(client):
+    await database.execute_many(regions.insert(),
+                                values=regions_mocked)
+    await database.execute_many(day_reports.insert(),
+                                values=day_reports_mocked)
+    res = await client.get('/api/v1/regions/1/day_reports')
+    assert res.status_code == 200
+    assert deserialize_day_reports(res.json()) == day_reports_mocked[:2]
+
+    res = await client.get('/api/v1/regions/3/day_reports')
+    assert res.status_code == 200
+    print(deserialize_day_reports(res.json()))
+    assert deserialize_day_reports(res.json()) == day_reports_mocked[2:]
+
+
+@pytest.mark.asyncio
+async def test_update_or_create_day_report(client, auth_headers):
+    await database.execute_many(regions.insert(), values=regions_mocked)
+    res = await client.put('/api/v1/regions/1/day_reports',
+                           json={})
+    assert res.status_code == 403
+
+    res = await client.put('/api/v1/regions/1/day_reports', json={},
+                           headers=auth_headers)
+    assert res.status_code == 201
+    today = datetime.date.today()
+    assert deserialize_day_report(res.json()) == {
+        'region_id': 1, 'date': today, 'total_cases': 0,
+        'total_deaths': 0
+    }
+
+    mock = {
+        'region_id': 1, 'date': today, 'total_cases': 100,
+        'total_deaths': 10
+    }
+
+    res = await client.put(
+        f'/api/v1/regions/1/day_reports', headers=auth_headers,
+        json=jsonable_encoder(DayReport(**mock))
+    )
+
+    assert res.status_code == 200
+    assert deserialize_day_report(res.json()) == mock
+
+    res = await client.get(
+        '/api/v1/regions/1/day_reports/'
+        f'{today.year}-{today.month}-{today.day}')
+    assert res.status_code == 200
+    assert deserialize_day_report(res.json()) == mock
+
+
+@pytest.mark.asyncio
+async def test_delete_day_report(client, auth_headers):
+    await database.execute_many(regions.insert(), values=regions_mocked)
+    await database.execute_many(day_reports.insert(),
+                                values=day_reports_mocked)
+
+    res = await client.delete('/api/v1/regions/1/day_reports/2020-03-28')
+    assert res.status_code == 403
+
+    res = await client.delete('/api/v1/regions/1/day_reports/2020-03-28',
+                              headers=auth_headers)
+    assert res.status_code == 200
+
+    res = await client.get('/api/v1/regions/1/day_reports/2020-03-28')
+    assert res.status_code == 404
+
+    res = await client.get('/api/v1/regions/1/day_reports')
+    assert res.status_code == 200
+    assert deserialize_day_reports(res.json()) == day_reports_mocked[1:2]
+
+    res = await client.get('/api/v1/regions/3/day_reports')
+    assert res.status_code == 200
+    assert deserialize_day_reports(res.json()) == day_reports_mocked[2:]
+
+
+

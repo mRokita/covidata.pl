@@ -1,15 +1,21 @@
+import datetime
 from typing import List
 
 from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
 import secrets
 
+from fastapi.encoders import jsonable_encoder
 from fastapi.params import Path
+from fastapi.routing import serialize_response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy import and_
+from sqlalchemy.dialects.mysql import insert
 from starlette.responses import JSONResponse
 
 from database import database
-from schemas import DayReport, Region, RegionCreate, HTTP409
+from queries import filter_by_day_report, get_day_report, day_report_exists
+from schemas import DayReport, Region, RegionCreate, HTTP409, DayReportCreate
 from tables import regions, day_reports
 
 app = FastAPI()
@@ -91,16 +97,58 @@ async def update_region(
     )
     if not id_valid:
         raise HTTPException(404)
-    await database.fetch_one(
+    await database.execute(
         regions.update().where(regions.c.id == id).values(**region.dict())
     )
 
 
-@app.get("/api/v1/day_reports/{region_id}",
+@app.get("/api/v1/regions/{region_id}/day_reports",
          response_model=List[DayReport])
 async def read_day_reports(region_id: int):
     return await database.fetch_all(
         day_reports.select().where(day_reports.c.region_id == region_id))
+
+
+@app.get("/api/v1/regions/{region_id}/day_reports/{date}",
+         response_model=DayReport)
+async def read_day_reports(region_id: int,
+                           date: datetime.date):
+    data = await get_day_report(region_id, date)
+    if not data:
+        raise HTTPException(
+            status_code=404, detail='Day report does not exist.'
+        )
+    return data
+
+
+@app.put("/api/v1/regions/{region_id}/day_reports", response_model=DayReport)
+async def create_or_update_day_report(
+        region_id: int,
+        day_report: DayReportCreate,
+        auth: bool = Depends(authenticated)):  # noqa
+    status_code = 200
+    if await day_report_exists(region_id, day_report.date):
+        query = filter_by_day_report(day_reports.update(), region_id,
+                                     day_report.date)
+        await database.execute(query, values=day_report.dict())
+    else:
+        query = day_reports.insert().values(**day_report.dict(),
+                                            region_id=region_id)
+        await database.execute(query)
+        status_code = status.HTTP_201_CREATED
+    db_day_report = await get_day_report(region_id, day_report.date)
+
+    return JSONResponse(status_code=status_code,
+                        content=jsonable_encoder(db_day_report))
+
+
+@app.delete("/api/v1/regions/{region_id}/day_reports/{date}",
+            response_model=DayReport)
+async def delete_day_report(region_id: int,
+                            date: datetime.date,
+                            auth: bool = Depends(authenticated)):  # noqa
+    await database.execute(
+        filter_by_day_report(day_reports.delete(), region_id, date))
 
 
 if __name__ == "__main__":
