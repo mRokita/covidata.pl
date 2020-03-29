@@ -10,6 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
+from settings import DATABASE_URL
+
 revision = '73bce5069427'
 down_revision = '67a2029097d5'
 branch_labels = None
@@ -29,6 +31,8 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_users_username'), ['username'], unique=True)
 
     with op.batch_alter_table('day_reports', schema=None) as batch_op:
+        if not DATABASE_URL.startswith('sqlite'):
+            batch_op.drop_constraint('day_reports_region_id_fkey', type_='foreignkey')
         batch_op.create_foreign_key('day_reports_region_id_fkey',
                                     'regions', ['region_id'], ['id'], ondelete='CASCADE')
 

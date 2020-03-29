@@ -48,7 +48,7 @@ async def login_for_access_token(
 
 @app.delete("/api/v1/regions/{id}", response_model=Region)
 async def delete_region(id: int = None,
-                        username: str = Depends(get_current_user)):
+                        username: str = Depends(get_current_user)):  # noqa
     query = regions.select().where(regions.c.id == id)
     db_region = await database.fetch_one(query)
     if not db_region:
@@ -73,7 +73,7 @@ async def read_regions(
 @app.post("/api/v1/regions", response_model=Region,
           responses={409: {"model": HTTP409}})
 async def create_region(region: RegionCreate,
-                        username: str = Depends(get_current_user)):
+                        username: str = Depends(get_current_user)):  # noqa
     """
     Create a new region, raise exception if exists
     """
@@ -95,7 +95,7 @@ async def create_region(region: RegionCreate,
 async def update_region(
         id: int, *,  # noqa
         region: RegionCreate = Body(...),
-        auth: bool = Depends(get_current_user)):
+        username: str = Depends(get_current_user)):  # noqa
     id_valid = await database.fetch_one(
         regions.select().where(regions.c.id == id)
     )
@@ -129,15 +129,31 @@ async def read_day_reports(region_id: int,
 async def create_or_update_day_report(
         region_id: int,
         day_report: DayReportCreate,
-        username: str = Depends(get_current_user)):
+        username: str = Depends(get_current_user)):  # noqa
+    """
+    Update or create a day report, if there is no record for the
+    region and date specified yet.
+    If you omit some fields in submitted DayReportCreate,
+    they won't be processed during the update.
+    """
     status_code = 200
     if await day_report_exists(region_id, day_report.date):
         query = filter_by_day_report(day_reports.update(), region_id,
                                      day_report.date)
-        await database.execute(query, values=day_report.dict())
+        await database.execute(
+            query,
+            # Exclude unset, because we are just want to UPDATE the object,
+            # and leave unspecified fields as they are.
+            values=day_report.dict(
+                exclude_unset=True
+            )
+
+        )
     else:
-        query = day_reports.insert().values(**day_report.dict(),
-                                            region_id=region_id)
+        query = day_reports.insert().values(
+            **day_report.dict(),
+            region_id=region_id
+        )
         await database.execute(query)
         status_code = status.HTTP_201_CREATED
     db_day_report = await get_day_report(region_id, day_report.date)
@@ -150,7 +166,7 @@ async def create_or_update_day_report(
             response_model=DayReport)
 async def delete_day_report(region_id: int,
                             date: datetime.date,
-                            username: str = Depends(get_current_user)):
+                            username: str = Depends(get_current_user)):  # noqa
     await database.execute(
         filter_by_day_report(day_reports.delete(), region_id, date))
 

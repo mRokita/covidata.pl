@@ -1,5 +1,3 @@
-from typing import List, Set, Any, Type
-
 from pydantic import BaseModel
 import datetime
 
@@ -21,6 +19,7 @@ class DayReportBase(BaseModel):
     date: datetime.date = datetime.date.today()
     total_cases: int = 0
     total_deaths: int = 0
+    total_recoveries: int = 0
 
 
 class DayReportCreate(DayReportBase):

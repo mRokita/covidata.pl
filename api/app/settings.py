@@ -1,10 +1,8 @@
-import os
-
 from starlette.config import Config
 
 config = Config()
 
-TESTING = config('TESTING', cast=bool, default=True)
+TESTING = config('TESTING', cast=bool, default=False)
 
 STAGE = config('STAGE', cast=str, default='DEBUG')
 
