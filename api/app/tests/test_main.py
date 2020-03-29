@@ -1,6 +1,7 @@
 import os
 
 from starlette.config import environ
+
 environ['TESTING'] = 'True'
 # Switch database to sqlite before DATABASE_URL gets loaded
 import datetime
@@ -8,7 +9,7 @@ import pytest
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy_utils import drop_database, database_exists
 from auth import authenticate_user, get_password_hash
-from schemas import DayReport, UserCreate
+from schemas import DayReport, UserCreate, Region
 from database import database
 from tables import regions, day_reports, users
 from settings import DATABASE_URL
@@ -26,6 +27,8 @@ regions_mocked = [
     {'id': 3, 'name': 'Niemcy', 'is_poland': False}
 ]
 
+regions_mocked = [Region(**r).dict() for r in regions_mocked]
+
 day_reports_mocked = [
     {'date': datetime.date(year=2020, month=3, day=28),
      'total_cases': 1000, 'total_deaths': 20, 'region_id': 1},
@@ -37,13 +40,15 @@ day_reports_mocked = [
      'total_cases': 20, 'total_deaths': 3, 'region_id': 3}
 ]
 
+# Fill with some defaults
+day_reports_mocked = [DayReport(**dr).dict() for dr in day_reports_mocked]
 
 if os.path.exists('/tmp/test.db'):
     os.remove('/tmp/test.db')
 
 
 @pytest.fixture()
-async def auth_headers():
+def auth_headers():
     return {'Authorization': f'Bearer {TEST_AUTH_TOKEN}'}
 
 
@@ -91,7 +96,8 @@ async def test_create_region(client, auth_headers):
         "409 is returned if already created"
 
     response = await client.get('/api/v1/regions')
-    assert response.json() == [{'id': 1, 'name': 'test', 'is_poland': False}], \
+    assert response.json() == [
+        {'id': 1, 'name': 'test', 'is_poland': False}], \
         'Records have been successfully inserted'
     assert response.status_code == 200
 
@@ -164,7 +170,6 @@ async def test_read_day_reports(client):
 
     res = await client.get('/api/v1/regions/3/day_reports')
     assert res.status_code == 200
-    print(deserialize_day_reports(res.json()))
     assert deserialize_day_reports(res.json()) == day_reports_mocked[2:]
 
 
@@ -175,33 +180,37 @@ async def test_update_or_create_day_report(client, auth_headers):
                            json={})
     assert res.status_code == 401
 
-    res = await client.put('/api/v1/regions/1/day_reports', json={},
+    res = await client.put('/api/v1/regions/1/day_reports', json={
+        'total_cases': 10
+    },
                            headers=auth_headers)
     assert res.status_code == 201
     today = datetime.date.today()
-    assert deserialize_day_report(res.json()) == {
-        'region_id': 1, 'date': today, 'total_cases': 0,
-        'total_deaths': 0
+    mock_res = {
+        'region_id': 1, 'date': today, 'total_cases': 10,
+        'total_deaths': 0, 'total_recoveries': 0
     }
+    assert deserialize_day_report(res.json()) == mock_res
 
     mock = {
-        'region_id': 1, 'date': today, 'total_cases': 100,
+        'region_id': 1,
         'total_deaths': 10
     }
 
     res = await client.put(
         f'/api/v1/regions/1/day_reports', headers=auth_headers,
-        json=jsonable_encoder(DayReport(**mock))
+        json=jsonable_encoder(DayReport(**mock).dict(exclude_unset=True))
     )
 
     assert res.status_code == 200
-    assert deserialize_day_report(res.json()) == mock
+    # The result should be a merge of previous result and submission.
+    assert deserialize_day_report(res.json()) == {**mock_res, **mock}
 
     res = await client.get(
         '/api/v1/regions/1/day_reports/'
         f'{today.year}-{today.month}-{today.day}')
     assert res.status_code == 200
-    assert deserialize_day_report(res.json()) == mock
+    assert deserialize_day_report(res.json()) == {**mock_res, **mock}
 
 
 @pytest.mark.asyncio
@@ -230,13 +239,16 @@ async def test_delete_day_report(client, auth_headers):
 
 
 @pytest.mark.asyncio
-async def test_auth(client):
+async def test_auth():
     user_create = UserCreate(username='mrokita', password='mrokitax')
     create_dict = user_create.dict()
     del create_dict['password']
-    await database.execute(users.insert(),
-                           values={**create_dict,
-                                   'hashed_password': get_password_hash(
-                                       user_create.password)})
+    await database.execute(
+        users.insert(),
+        values={
+            **create_dict,
+            'hashed_password': get_password_hash(user_create.password)
+        }
+    )
     user = await authenticate_user(user_create.username, user_create.password)
     assert user.username == 'mrokita'
