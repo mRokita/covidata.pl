@@ -27,6 +27,14 @@ services:
       POSTGRES_DB: covidata
     networks:
       - default
+  crawler:
+    image: 127.0.0.1:5000/covidata-crawler
+    build:
+      context: crawler/
+    networks:
+      - default
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 networks:
   traefik:
     external: true
