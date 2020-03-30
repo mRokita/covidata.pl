@@ -273,7 +273,7 @@ async def test_read_downloaded_global_reports(client):
 
 
 @pytest.mark.asyncio
-async def test_create_downloaded_global_report(client):
+async def test_create_downloaded_global_report(client, auth_headers):
     mock_tomorrow = DownloadedGlobalReport(
         date=today+datetime.timedelta(days=1))
 
@@ -281,10 +281,18 @@ async def test_create_downloaded_global_report(client):
         '/api/v1/downloaded_global_reports',
         data=mock_tomorrow.json()
     )
+    assert res.status_code == 401
+
+    res = await client.post(
+        '/api/v1/downloaded_global_reports',
+        headers=auth_headers,
+        data=mock_tomorrow.json()
+    )
     assert res.status_code == 200
 
     res = await client.post(
         '/api/v1/downloaded_global_reports',
+        headers=auth_headers,
         data=mock_tomorrow.json()
     )
     assert res.status_code == 409
@@ -292,6 +300,7 @@ async def test_create_downloaded_global_report(client):
     mock = DownloadedGlobalReport(date=today)
     res = await client.post(
         '/api/v1/downloaded_global_reports',
+        headers=auth_headers,
         data=mock.json()
     )
     assert res.status_code == 200
