@@ -6,7 +6,8 @@ import uvicorn
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
-from starlette.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from auth import authenticate_user, create_access_token, get_current_user
 from database import database
@@ -20,6 +21,23 @@ from secrets import compare_digest
 from tables import regions, day_reports
 
 app = FastAPI()
+
+
+origins = [
+    "http://covidata.localhost",
+    "https://covidata.pl",
+    "https://coronadata.pl",
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
