@@ -5,6 +5,7 @@ HARD_COUNTRY_FIXES = {
     'Laos': 'Laos',
     'Ivory Coast': 'Wybrzeże Kości Słoniowej',
     'Mainland China': 'Chiny',
+    'Channel Islands': 'Wyspy Normandzkie',
     'South Korea': 'Korea Południowa',
     'Korea, South': 'Korea Południowa',
     'occupied Palestinian territory': 'Zachodni Brzeg i Strefa Gazy',
