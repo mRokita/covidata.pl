@@ -11,7 +11,7 @@ variables:
   CRAWLER_RELEASE_IMAGE: registry.gitlab.com/mRokita/covidata-crawler:latest
 
 before_script:
-  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.example.com
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
 build:
   stage: build
