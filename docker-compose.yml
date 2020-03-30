@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   api:
-    image: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}-api:${CI_BUILD_REF_NAME}"
+    image: "registry.gitlab.com/mRokita/covidata-api:{$IMAGE_TAG}"
     build:
       context: api/
     labels:
@@ -28,7 +28,7 @@ services:
     networks:
       - default
   crawler:
-    image: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}-crawler:${CI_BUILD_REF_NAME}"
+    image: "registry.gitlab.com/mRokita/covidata-crawler:{$IMAGE_TAG}"
     build:
       context: crawler/
     networks:
