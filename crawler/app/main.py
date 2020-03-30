@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Iterator, NamedTuple, Dict, Set
 
 import httpx
@@ -165,4 +166,9 @@ def download_global_data():
 
 
 if __name__ == '__main__':
-    download_global_data()
+    while True:
+        try:
+            download_global_data()
+        except Exception as e:
+            logger.error(e)
+        sleep(60)
