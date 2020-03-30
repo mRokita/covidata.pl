@@ -1,10 +1,9 @@
 import os
 
 from starlette.config import environ
+environ['TESTING'] = 'True'
 
 from queries import create_downloaded_global_report
-
-environ['TESTING'] = 'True'
 # Switch database to sqlite before DATABASE_URL gets loaded
 import datetime
 import pytest
