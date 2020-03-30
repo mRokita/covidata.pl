@@ -85,7 +85,6 @@ def create_region(name: str, is_poland: bool = False) -> int:
     if res.status_code == 200:
         return res.json()['id']
     assert res.status_code == 409
-    print(res.json())
     return res.json()['conflicting_object']['id']
 
 

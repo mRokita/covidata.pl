@@ -126,8 +126,8 @@ async def read_day_reports(region_id: int):
 
 @app.get("/api/v1/regions/{region_id}/day_reports/{date}",
          response_model=DayReport)
-async def read_day_reports(region_id: int,
-                           date: datetime.date):
+async def read_day_report(region_id: int,
+                          date: datetime.date):
     data = await get_day_report(region_id, date)
     if not data:
         raise HTTPException(
@@ -180,6 +180,21 @@ async def delete_day_report(region_id: int,
                             username: str = Depends(get_current_user)):  # noqa
     await database.execute(
         filter_by_day_report(day_reports.delete(), region_id, date))
+
+
+@app.get("/api/v1/downloaded_global_reports",
+         response_model=List[DownloadedGlobalReport])
+async def read_downloaded_global_reports():
+    """Get a list of reports downloaded from CSSEGISandData by the crawler"""
+    return await get_downloaded_global_reports()
+
+
+@app.post("/api/v1/downloaded_global_reports", responses={'409': {}})
+async def create_downloaded_global_report(
+        downloaded_global_report: DownloadedGlobalReport):
+    if await downloaded_global_report_exists(downloaded_global_report):
+        return JSONResponse(status_code=409)
+    await insert_downloaded_global_report(downloaded_global_report)
 
 
 if __name__ == "__main__":

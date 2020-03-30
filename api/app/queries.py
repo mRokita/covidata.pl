@@ -33,8 +33,15 @@ async def get_user(username: str):
     return User(**db_user) if db_user else None
 
 
+async def downloaded_global_report_exists(
+        downloaded_global_report: DownloadedGlobalReport):
+    query = downloaded_global_reports.select().where(
+        downloaded_global_reports.c.date == downloaded_global_report.date
+    )
+    return bool(await database.fetch_val(query))
 
-async def create_downloaded_global_report(
+
+async def insert_downloaded_global_report(
         global_day_report: DownloadedGlobalReport):
     return await database.execute(
         downloaded_global_reports.insert(),
@@ -43,6 +50,6 @@ async def create_downloaded_global_report(
 
 
 async def get_downloaded_global_reports():
-    return await database.execute(
+    return await database.fetch_all(
         downloaded_global_reports.select()
     )
