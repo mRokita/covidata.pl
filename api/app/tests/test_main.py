@@ -2,6 +2,8 @@ import os
 
 from starlette.config import environ
 
+from queries import create_downloaded_global_report
+
 environ['TESTING'] = 'True'
 # Switch database to sqlite before DATABASE_URL gets loaded
 import datetime
@@ -9,7 +11,7 @@ import pytest
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy_utils import drop_database, database_exists
 from auth import authenticate_user, get_password_hash
-from schemas import DayReport, UserCreate, Region
+from schemas import DayReport, UserCreate, Region, DownloadedGlobalReport
 from database import database
 from tables import regions, day_reports, users
 from settings import DATABASE_URL
@@ -28,6 +30,8 @@ regions_mocked = [
 ]
 
 regions_mocked = [Region(**r).dict() for r in regions_mocked]
+
+today = datetime.date.today()
 
 day_reports_mocked = [
     {'date': datetime.date(year=2020, month=3, day=28),
@@ -185,7 +189,6 @@ async def test_update_or_create_day_report(client, auth_headers):
     },
                            headers=auth_headers)
     assert res.status_code == 201
-    today = datetime.date.today()
     mock_res = {
         'region_id': 1, 'date': today, 'total_cases': 10,
         'total_deaths': 0, 'total_recoveries': 0
@@ -252,3 +255,41 @@ async def test_auth():
     )
     user = await authenticate_user(user_create.username, user_create.password)
     assert user.username == 'mrokita'
+
+
+@pytest.mark.asyncio
+async def test_read_downloaded_global_reports(client):
+    res = client.get('/api/v1/downloaded_global_reports')
+    assert res.status_code == 200
+    assert res.json() == []
+
+    mock = DownloadedGlobalReport(date=today)
+    await create_downloaded_global_report(
+        mock
+    )
+
+    res = client.get('/api/v1/downloaded_global_reports')
+    assert res.status_code == 200
+    assert DownloadedGlobalReport(**res.json()).dict() == mock.dict()
+
+
+@pytest.mark.asyncio
+async def test_create_downloaded_global_report(client):
+    mock_tomorrow = DownloadedGlobalReport(
+        date=today+datetime.timedelta(days=1))
+    res = client.post(
+        '/api/v1/downloaded_global_reports',
+        json=mock_tomorrow.dict()
+    )
+    assert res.status_code == 200
+
+    mock = DownloadedGlobalReport(date=today)
+    res = client.post(
+        '/api/v1/downloaded_global_reports',
+        json=mock.dict()
+    )
+    assert res.status_code == 200
+
+    res = client.get('/api/v1/downloaded_global_reports')
+    assert res.status_code == 200
+    assert res.json() == [mock_tomorrow, mock]
