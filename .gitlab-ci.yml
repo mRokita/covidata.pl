@@ -3,7 +3,7 @@ stages:
   - deploy
 test:
   stage: test
-  image: python:3.7-slim
+  image: tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
   script:
     - apk add --no-cache postgresql-libs postgresql-dev gcc python3-dev libffi-dev musl-dev
     - apk add --no-cache --virtual .build-deps make gcc musl-dev postgresql-dev
