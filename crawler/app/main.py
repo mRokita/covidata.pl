@@ -6,10 +6,9 @@ import pycountry
 import datetime
 from io import StringIO
 import gettext
-from os import environ
 
-API_HOST = 'localhost:8000' if environ.get(
-    'STAGE', 'PRODUCTION') == 'DEBUG' else 'api'
+from settings import HARD_COUNTRY_FIXES, SKIPPED_GLOBAL_COUNTRIES, API_HOST
+from loguru import logger
 
 polish = gettext.translation('iso3166',
                              pycountry.LOCALES_DIR,
@@ -33,20 +32,6 @@ def date_from_str(date: str) -> datetime.datetime:
     return datetime.datetime.strptime(date, "%Y-%m-%d")
 
 
-HARD_COUNTRY_FIXES = {
-    'Burma': 'Mjanma (Birma)',
-    'Laos': 'Laos',
-    'Mainland China': 'Chiny',
-    'South Korea': 'Korea Południowa',
-    'Korea, South': 'Korea Południowa',
-    'occupied Palestinian territory': 'Zachodni Brzeg i Strefa Gazy',
-    'West Bank and Gaza': 'Zachodni Brzeg i Strefa Gazy',
-    'Taiwan*': 'Tajwan',
-    'Macau': 'Makau',
-    'Others': 'Inne'
-}
-
-
 def get_polish_name(country_name: str) -> str:
     if country_name in HARD_COUNTRY_FIXES:
         return HARD_COUNTRY_FIXES[country_name]
@@ -54,7 +39,7 @@ def get_polish_name(country_name: str) -> str:
         country = pycountry.countries.search_fuzzy(country_name)[0]
         country_name = polish.gettext(country.name)
     except LookupError:
-        print(f"Couldn't translate '{country_name}'")
+        logger.warning(f"Couldn't translate '{country_name}'")
     return country_name
 
 
@@ -124,6 +109,8 @@ def download_global_data_for_day(day: datetime.datetime):
     db_regions = get_regions()
     for (country_name, total_deaths, total_recoveries, total_cases) \
             in get_global_cov_data(day):
+        if country_name in SKIPPED_GLOBAL_COUNTRIES:
+            continue
         country_name = get_polish_name(country_name)
         region_id = db_regions.get(country_name, None)
         if not region_id:
@@ -140,6 +127,15 @@ def download_global_data_for_day(day: datetime.datetime):
             )
             if res.status_code not in (200, 201):
                 raise HTTPError(res.status_code)
+    with Client() as client:
+        res = client.post(
+            'downloaded_global_reports',
+            json={'date': date_str(day)}
+        )
+    if not res.status_code == 200:
+        logger.error("Couldn't submit the report for " + date_str(day))
+    else:
+        logger.info("Downloaded data for " + date_str(day))
 
 
 def date_set(
@@ -166,7 +162,6 @@ def download_global_data():
     required -= downloaded
     for d in sorted(required):
         download_global_data_for_day(d)
-        print(d)
 
 
 if __name__ == '__main__':

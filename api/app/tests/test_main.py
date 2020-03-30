@@ -8,7 +8,6 @@ environ['TESTING'] = 'True'
 from queries import insert_downloaded_global_report
 import datetime
 import pytest
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy_utils import drop_database, database_exists
 from auth import authenticate_user, get_password_hash
 from schemas import DayReport, UserCreate, Region, DownloadedGlobalReport
