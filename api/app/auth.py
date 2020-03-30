@@ -80,7 +80,7 @@ async def get_current_user(token: str = Depends(auth_scheme)):
     except PyJWTError:
         raise credentials_exception
     user = await get_user(username)
-    if user is None:
+    if not user:
         raise credentials_exception
     return user
 

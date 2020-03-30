@@ -10,8 +10,13 @@ from starlette.responses import JSONResponse
 
 from auth import authenticate_user, create_access_token, get_current_user
 from database import database
-from queries import filter_by_day_report, get_day_report, day_report_exists
-from schemas import DayReport, Region, RegionCreate, HTTP409, DayReportCreate
+from queries import filter_by_day_report, get_day_report, day_report_exists, \
+    get_downloaded_global_reports, insert_downloaded_global_report, \
+    downloaded_global_report_exists
+from schemas import DayReport, Region, RegionCreate, HTTP409, \
+    DayReportCreate, DownloadedGlobalReport
+from settings import SERVICE_TOKEN
+from secrets import compare_digest
 from tables import regions, day_reports
 
 app = FastAPI()
@@ -30,6 +35,12 @@ async def shutdown():
 @app.post("/token")
 async def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends()):
+    if form_data.username == 'service_user' \
+         and compare_digest(form_data.password, SERVICE_TOKEN):
+        return {
+            "access_token": SERVICE_TOKEN,
+            "token_type": "bearer"
+        }
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(

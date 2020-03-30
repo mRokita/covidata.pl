@@ -30,7 +30,8 @@ async def day_report_exists(region_id: int, date: datetime.date) -> bool:
 async def get_user(username: str):
     db_user = await database.fetch_one(users.select().where(
         users.c.username == username))
-    return User(**db_user)
+    return User(**db_user) if db_user else None
+
 
 
 async def create_downloaded_global_report(
