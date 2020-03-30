@@ -26,7 +26,7 @@ test-api:
   tags:
     - private-shell
   script:
-    - docker run $API_TEST_IMAGE "python -m pytest --cov=. /app/tests/ --cov-report term-missing"
+    - docker run $API_TEST_IMAGE sh -c "python -m pytest --cov=. /app/tests/ --cov-report term-missing"
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
 release-api-image:
   stage: release
