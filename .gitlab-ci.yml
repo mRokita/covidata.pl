@@ -5,10 +5,10 @@ stages:
   - deploy
 
 variables:
-  API_TEST_IMAGE: registry.gitlab.com/mRokita/covidata-api:$CI_BUILD_REF_NAME
-  API_RELEASE_IMAGE: registry.gitlab.com/mRokita/covidata-api:latest
-  CRAWLER_TEST_IMAGE: registry.gitlab.com/mRokita/covidata-crawler:$CI_BUILD_REF_NAME
-  CRAWLER_RELEASE_IMAGE: registry.gitlab.com/mRokita/covidata-crawler:latest
+  API_TEST_IMAGE: registry.gitlab.com/mrokita/covidata-api:$CI_BUILD_REF_NAME
+  API_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata-api:latest
+  CRAWLER_TEST_IMAGE: registry.gitlab.com/mrokita/covidata-crawler:$CI_BUILD_REF_NAME
+  CRAWLER_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata-crawler:latest
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
