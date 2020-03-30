@@ -57,4 +57,4 @@ deploy:
     - private-shell
   script:
     - export IMAGE_TAG=latest
-    - docker stack deploy --compose-file docker-compose.yml covidata
+    - docker stack deploy --compose-file docker-compose.yml --resolve-image=always --with-registry-auth covidata
