@@ -191,7 +191,8 @@ async def read_downloaded_global_reports():
 
 @app.post("/api/v1/downloaded_global_reports", responses={'409': {}})
 async def create_downloaded_global_report(
-        downloaded_global_report: DownloadedGlobalReport):
+        downloaded_global_report: DownloadedGlobalReport,
+        username: str = Depends(get_current_user)):  # noqa
     if await downloaded_global_report_exists(downloaded_global_report):
         return JSONResponse(status_code=409)
     await insert_downloaded_global_report(downloaded_global_report)
