@@ -1,4 +1,4 @@
-from typing import Iterator, NamedTuple, Dict
+from typing import Iterator, NamedTuple, Dict, Set
 
 import httpx
 import pandas
@@ -6,31 +6,44 @@ import pycountry
 import datetime
 from io import StringIO
 import gettext
+from os import environ
+
+API_HOST = 'localhost:8000' if environ.get(
+    'STAGE', 'PRODUCTION') == 'DEBUG' else 'api'
 
 polish = gettext.translation('iso3166',
                              pycountry.LOCALES_DIR,
                              languages=['pl'])
 
 
-def cssegi_url(date: datetime.date):
+def cssegi_url(date: datetime.datetime):
     return (
         'https://raw.githubusercontent.com/CSSEGISandData/COVID-19'
         '/master/csse_covid_19_data'
         '/csse_covid_19_daily_reports/'
-        f'{datetime.datetime.strftime(date, "%m-%d-%Y")}.csv'  # noqa
+        f'{datetime.datetime.strftime(date, "%m-%d-%Y")}.csv'
     )
 
 
-def date_str(date: datetime.date):
-    return datetime.datetime.strftime(date, "%Y-%m-%d")  # noqa
+def date_str(date: datetime.datetime) -> str:
+    return datetime.datetime.strftime(date, "%Y-%m-%d")
+
+
+def date_from_str(date: str) -> datetime.datetime:
+    return datetime.datetime.strptime(date, "%Y-%m-%d")
 
 
 HARD_COUNTRY_FIXES = {
     'Burma': 'Mjanma (Birma)',
     'Laos': 'Laos',
+    'Mainland China': 'Chiny',
+    'South Korea': 'Korea Południowa',
     'Korea, South': 'Korea Południowa',
+    'occupied Palestinian territory': 'Zachodni Brzeg i Strefa Gazy',
     'West Bank and Gaza': 'Zachodni Brzeg i Strefa Gazy',
-    'Taiwan*': 'Tajwan'
+    'Taiwan*': 'Tajwan',
+    'Macau': 'Makau',
+    'Others': 'Inne'
 }
 
 
@@ -48,20 +61,37 @@ def get_polish_name(country_name: str) -> str:
 class Client(httpx.Client):
     def __init__(self):
         super().__init__(
-            base_url='http://api/api/v1/',
+            base_url=f'http://{API_HOST}/api/v1/',
             headers={'Authorization': 'Bearer ***REMOVED***'}
         )
 
 
+class GlobalDataNotAvailableYet(Exception):
+    pass
+
+
+class HTTPError(Exception):
+    pass
+
+
 def get_global_cov_data(
-        date: datetime.date = datetime.date.today()) -> Iterator[NamedTuple]:
+        date: datetime.datetime = datetime.date.today()
+) -> Iterator[NamedTuple]:
     with httpx.Client() as client:
         url = cssegi_url(date)
         data = client.get(url)
-        df = pandas.read_csv(
-            StringIO(data.text),
-            usecols=['Country_Region', 'Deaths', 'Recovered', 'Active']
-        )
+        if data.status_code == 404:
+            raise GlobalDataNotAvailableYet(
+                f'Data not available yet for {date}')
+        if data.status_code != 200:
+            raise HTTPError(
+                f'date: {date}, code: {data.status_code}')
+
+        df = pandas.read_csv(StringIO(data.text))
+        df = df.rename(columns={
+            'Country/Region': 'Country_Region'
+        })
+        df = df[['Country_Region', 'Deaths', 'Recovered', 'Confirmed']]
         df['Country_Region'] = df['Country_Region'].str.replace(r"\(.*\)", "")
     return df.groupby(['Country_Region']).sum().itertuples()
 
@@ -69,7 +99,8 @@ def get_global_cov_data(
 def get_regions() -> Dict[str, int]:
     with Client() as client:
         res = client.get('regions')
-    assert res.status_code == 200
+    if res.status_code != 200:
+        raise HTTPError(res.status_code)
     return dict([(r['name'], r['id']) for r in res.json()])
 
 
@@ -84,16 +115,15 @@ def create_region(name: str, is_poland: bool = False) -> int:
         )
     if res.status_code == 200:
         return res.json()['id']
-    assert res.status_code == 409
+    if res.status_code != 409:
+        raise HTTPError(res.status_code)
     return res.json()['conflicting_object']['id']
 
 
-def main():
-    today = datetime.date.today() - datetime.timedelta(days=2)
+def download_global_data_for_day(day: datetime.datetime):
     db_regions = get_regions()
-    for (country_name, total_deaths, total_recoveries, total_active) \
-            in get_global_cov_data(today):
-        total_cases = total_deaths + total_recoveries + total_active
+    for (country_name, total_deaths, total_recoveries, total_cases) \
+            in get_global_cov_data(day):
         country_name = get_polish_name(country_name)
         region_id = db_regions.get(country_name, None)
         if not region_id:
@@ -102,14 +132,42 @@ def main():
             res = client.put(
                 f'regions/{region_id}/day_reports/',
                 json={
-                    'date': date_str(today),
+                    'date': date_str(day),
                     'total_cases': total_cases,
                     'total_deaths': total_deaths,
                     'total_recoveries': total_recoveries
                 }
             )
-            assert res.status_code in (200, 201), res.status_code
+            if res.status_code not in (200, 201):
+                raise HTTPError(res.status_code)
+
+
+def date_set(
+        start: datetime.datetime, end: datetime.date
+) -> Set[datetime.datetime]:
+    # We don't want to download for today, because they update it the next day.
+    # No need for days += 1
+    days = (end - start).days
+    return {start + datetime.timedelta(days=i) for i in range(days)}
+
+
+def download_global_data():
+    today = datetime.datetime.today()
+
+    with Client() as client:
+        res = client.get('downloaded_global_reports')
+        if res.status_code != 200:
+            raise HTTPError(res.status_code)
+    required = date_set(
+        start=datetime.datetime(year=2020, month=1, day=22),
+        end=today
+    )
+    downloaded = {date_from_str(d['date']) for d in res.json()}
+    required -= downloaded
+    for d in sorted(required):
+        download_global_data_for_day(d)
+        print(d)
 
 
 if __name__ == '__main__':
-    main()
+    download_global_data()
