@@ -5,6 +5,8 @@ stages:
   - deploy
 
 variables:
+  FRONT_TEST_IMAGE: registry.gitlab.com/mrokita/covidata.pl:frontend-$CI_BUILD_REF_NAME
+  FRONT_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata.pl:frontend-latest
   API_TEST_IMAGE: registry.gitlab.com/mrokita/covidata.pl:api-$CI_BUILD_REF_NAME
   API_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata.pl:api-latest
   CRAWLER_TEST_IMAGE: registry.gitlab.com/mrokita/covidata.pl:crawler-$CI_BUILD_REF_NAME
@@ -28,6 +30,16 @@ test-api:
   script:
     - docker run $API_TEST_IMAGE sh -c "python -m pytest --cov=. /app/tests/ --cov-report term-missing"
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+release-frontend-image:
+  stage: release
+  tags:
+    - private-shell
+  script:
+    - docker pull $FRONT_TEST_IMAGE
+    - docker tag $FRONT_TEST_IMAGE $API_RELEASE_IMAGE
+    - docker push $FRONT_RELEASE_IMAGE
+  only:
+    - master
 release-api-image:
   stage: release
   tags:
