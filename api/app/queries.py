@@ -4,8 +4,8 @@ from sqlalchemy import and_
 from sqlalchemy.sql import TableClause
 
 from database import database
-from schemas import DayReport, User
-from tables import day_reports, users
+from schemas import DayReport, User, DownloadedGlobalReport
+from tables import day_reports, users, downloaded_global_reports
 
 
 def filter_by_day_report(query: TableClause,
@@ -31,3 +31,17 @@ async def get_user(username: str):
     db_user = await database.fetch_one(users.select().where(
         users.c.username == username))
     return User(**db_user)
+
+
+async def create_downloaded_global_report(
+        global_day_report: DownloadedGlobalReport):
+    return await database.execute(
+        downloaded_global_reports.insert(),
+        values=global_day_report.dict()
+    )
+
+
+async def get_downloaded_global_reports():
+    return await database.execute(
+        downloaded_global_reports.select()
+    )

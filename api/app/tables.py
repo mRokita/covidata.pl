@@ -39,3 +39,9 @@ users = Table(
     Column('username', String, unique=True, index=True),
     Column('hashed_password', String),
 )
+
+downloaded_global_reports = Table(
+    'downloaded_global_reports',
+    metadata,
+    Column('date', Date, primary_key=True, index=True, unique=True)
+)

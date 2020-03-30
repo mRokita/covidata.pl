@@ -30,6 +30,10 @@ class DayReport(DayReportBase):
     region_id: int
 
 
+class DownloadedGlobalReport(BaseModel):
+    date: datetime.date
+
+
 class HTTP409(BaseModel):
     conflicting_object: BaseModel
 
