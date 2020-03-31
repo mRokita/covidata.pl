@@ -8,6 +8,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import select, func, and_
 
 from auth import authenticate_user, create_access_token, get_current_user
 from database import database
@@ -15,7 +16,7 @@ from queries import filter_by_day_report, get_day_report, day_report_exists, \
     get_downloaded_global_reports, insert_downloaded_global_report, \
     downloaded_global_report_exists
 from schemas import DayReport, Region, RegionCreate, HTTP409, \
-    DayReportCreate, DownloadedGlobalReport
+    DayReportCreate, DownloadedGlobalReport, LatestDayReport
 from settings import SERVICE_TOKEN
 from secrets import compare_digest
 from tables import regions, day_reports
@@ -118,6 +119,30 @@ async def create_region(region: RegionCreate,
         regions.insert(), values=region.dict()
     )
     return {**region.dict(), "id": db_region_id}
+
+
+@app.get("/api/v1/latest_day_reports/", response_model=List[LatestDayReport])
+async def read_latest_day_reports():
+    max_date_func = func.max(day_reports.c.date).label('date')
+    mdr = select(
+        [day_reports.c.region_id, max_date_func]
+    ).group_by(
+        day_reports.c.region_id
+    ).having(
+        max_date_func > datetime.date.today() - datetime.timedelta(days=3)
+    ).alias('maxr')
+
+    query = select(
+        [day_reports, regions.c.name.label('region_name')]
+    ).where(
+        and_(
+            day_reports.c.date == mdr.c.date,
+            day_reports.c.region_id == mdr.c.region_id,
+            regions.c.id == day_reports.c.region_id)
+    ).order_by(-day_reports.c.total_cases)
+    ret = await database.fetch_all(query)
+    print(ret)
+    return ret
 
 
 @app.put("/api/v1/regions/{id}", response_model=Region)

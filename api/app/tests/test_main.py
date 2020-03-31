@@ -309,3 +309,37 @@ async def test_create_downloaded_global_report(client, auth_headers):
     assert res.status_code == 200
     assert [DownloadedGlobalReport(**r)
             for r in res.json()] == [mock_tomorrow, mock]
+
+
+@pytest.mark.asyncio
+async def test_read_latest_day_reports(client):
+    mocked_regions = [
+        Region(id=1, name='Test1'),
+        Region(id=2, name='Test2')
+    ]
+    mocked_day_reports = [
+        DayReport(region_id=1,
+                  date=today-datetime.timedelta(days=2),
+                  total_cases=10),
+        DayReport(region_id=1,
+                  date=today - datetime.timedelta(days=1),
+                  total_cases=5),
+        DayReport(region_id=2,
+                  date=today - datetime.timedelta(days=1),
+                  total_cases=10),
+        DayReport(region_id=2,
+                  date=today,
+                  total_cases=40),
+    ]
+    await database.execute_many(regions.insert(),
+                                [m.dict() for m in mocked_regions])
+
+    await database.execute_many(day_reports.insert(),
+                                [m.dict() for m in mocked_day_reports])
+
+    res = await client.get("/api/v1/latest_day_reports/")
+    assert res.status_code == 200
+    assert [DayReport(**j)
+            for j in res.json()] == [mocked_day_reports[3], mocked_day_reports[1]]
+    assert res.json()[0]['region_name'] == 'Test2'
+    assert res.json()[1]['region_name'] == 'Test1'

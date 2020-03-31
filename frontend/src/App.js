@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import './App.css';
 import {API_URL} from './index'
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -17,6 +17,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableBody from "@material-ui/core/TableBody";
 import Grid from "@material-ui/core/Grid";
 import {CircularProgress} from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
 const axios = require('axios').default;
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,37 +34,32 @@ const useStyles = makeStyles((theme) => ({
 
 
 let RegionsTableRow = (props) => {
-    const [dayReport, setDayReport] = useState();
-    useEffect(() => {
-        axios.get(API_URL + 'regions/' + props.region.id + '/day_reports/2020-03-29')
-            .then((response) => {
-                setDayReport(response.data);
-            })
-    }, [props.region]);
+    let drp = props.regionDayReport;
     return (
-        <TableRow>
-            <TableCell>{props.region.name}</TableCell>
-            <TableCell>{dayReport ? dayReport.total_cases : ''}</TableCell>
-            <TableCell>0</TableCell>
-            <TableCell>0</TableCell>
+        <TableRow key={drp.region_id}>
+            <TableCell style={{maxWidth: '30vw'}}>{drp.region_name}</TableCell>
+            <TableCell style={{maxWidth: '20vw'}}>{drp.total_cases}</TableCell>
+            <TableCell style={{maxWidth: '20vw'}}>{drp.total_deaths}</TableCell>
+            <TableCell style={{maxWidth: '20vw'}}>{drp.total_recoveries}</TableCell>
         </TableRow>
     )
-}
+};
 
 
 let RegionsTableBody = () => {
     const [regions, setRegions] = useState([]);
     useEffect(() => {
-        axios.get(API_URL + 'regions')
+        axios.get(API_URL + 'latest_day_reports')
             .then((response) => {
                 setRegions(response.data);
+                console.log(response.data);
             })
     }, []);
     return <React.Fragment>
         {
             regions.map(
                 (value, index) => (
-                    <RegionsTableRow region={value}/>
+                    <RegionsTableRow regionDayReport={value}/>
                 )
             )
         }
@@ -71,6 +68,7 @@ let RegionsTableBody = () => {
 
 function App() {
     const classes = useStyles();
+    const [searchText, setSearchText] = useState();
     return (
         <React.Fragment>
             <CssBaseline/>
@@ -85,14 +83,21 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Container>
-                <TableContainer>
-                <Table>
+                <Grid xs={12} style={{marginTop: '20px'}}>
+                    <Grid xs={12} item>
+                        <form noValidate autoComplete={"off"}>
+                        <TextField label="Szukaj" variant="outlined" defaultValue={searchText} style={{width: '100%'}}/>
+                        </form>
+                    </Grid>
+                </Grid>
+                <TableContainer component={Paper} style={{marginTop: '20px'}}>
+                <Table style={{maxWidth: '100%'}} stickyHeader>
                     <TableHead>
                         <TableRow>
                             <TableCell>Kraj</TableCell>
-                            <TableCell>Zachorowania</TableCell>
-                            <TableCell>Wyzdrowienia</TableCell>
-                            <TableCell>Zgony</TableCell>
+                            <TableCell style={{maxWidth: '25vw'}}>Zachor.</TableCell>
+                            <TableCell style={{maxWidth: '25vw'}}>Wyzdr.</TableCell>
+                            <TableCell style={{maxWidth: '20vw'}}>Zgony</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -100,7 +105,7 @@ function App() {
                     </TableBody>
                 </Table>
                 </TableContainer>
-                <Grid container xs={12} justify={'center'} className={classes.root}>
+                <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>
                     <CircularProgress/>
                 </Grid>
             </Container>

@@ -30,6 +30,10 @@ class DayReport(DayReportBase):
     region_id: int
 
 
+class LatestDayReport(DayReport):
+    region_name: str
+
+
 class DownloadedGlobalReport(BaseModel):
     date: datetime.date
 
