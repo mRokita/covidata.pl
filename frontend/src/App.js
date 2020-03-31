@@ -39,8 +39,8 @@ let RegionsTableRow = (props) => {
         <TableRow key={drp.region_id}>
             <TableCell style={{maxWidth: '30vw'}}>{drp.region_name}</TableCell>
             <TableCell style={{maxWidth: '20vw'}}>{drp.total_cases}</TableCell>
-            <TableCell style={{maxWidth: '20vw'}}>{drp.total_deaths}</TableCell>
             <TableCell style={{maxWidth: '20vw'}}>{drp.total_recoveries}</TableCell>
+            <TableCell style={{maxWidth: '20vw'}}>{drp.total_deaths}</TableCell>
         </TableRow>
     )
 };
