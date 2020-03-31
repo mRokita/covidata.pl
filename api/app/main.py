@@ -9,6 +9,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import select, func, and_
+from starlette.middleware.gzip import GZipMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from auth import authenticate_user, create_access_token, get_current_user
 from database import database
@@ -23,6 +25,8 @@ from tables import regions, day_reports
 
 app = FastAPI()
 
+app.add_middleware(ProxyHeadersMiddleware)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 origins = [
     "http://covidata.localhost",
@@ -121,7 +125,7 @@ async def create_region(region: RegionCreate,
     return {**region.dict(), "id": db_region_id}
 
 
-@app.get("/api/v1/latest_day_reports/", response_model=List[LatestDayReport])
+@app.get("/api/v1/latest_day_reports", response_model=List[LatestDayReport])
 async def read_latest_day_reports():
     max_date_func = func.max(day_reports.c.date).label('date')
     mdr = select(

@@ -337,7 +337,7 @@ async def test_read_latest_day_reports(client):
     await database.execute_many(day_reports.insert(),
                                 [m.dict() for m in mocked_day_reports])
 
-    res = await client.get("/api/v1/latest_day_reports/")
+    res = await client.get("/api/v1/latest_day_reports")
     assert res.status_code == 200
     assert [DayReport(**j)
             for j in res.json()] == [mocked_day_reports[3], mocked_day_reports[1]]
