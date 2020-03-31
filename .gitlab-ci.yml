@@ -62,7 +62,6 @@ release-crawler-image:
     - master
 deploy:
   stage: deploy
-  when: manual
   only:
     - master
   tags:
