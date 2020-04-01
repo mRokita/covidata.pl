@@ -3,7 +3,8 @@ import {SET_GLOBAL_REPORTS, SET_SEARCH_TEXT} from "../actions";
 
 const initState = {
     searchText: '',
-    reports: []
+    reports: [],
+    reportsLoaded: false,
 };
 
 
@@ -12,7 +13,8 @@ const globalReportsReducer = (state = initState, action) => {
         case SET_GLOBAL_REPORTS:
             return {
                 ...state,
-                records: action.payload,
+                reports: action.payload,
+                reportsLoaded: true
             };
         case SET_SEARCH_TEXT:
             return {

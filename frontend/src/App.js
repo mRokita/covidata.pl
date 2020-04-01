@@ -20,7 +20,7 @@ import {CircularProgress} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import {useDispatch, useSelector} from "react-redux";
-import {setSearchText} from "./redux/actions";
+import {setGlobalReports, setSearchText} from "./redux/actions";
 
 
 const axios = require('axios').default;
@@ -53,19 +53,19 @@ let RegionsTableRow = (props) => {
 
 
 let RegionsTableBody = () => {
+    const dispatch = useDispatch();
     const searchText = useSelector(state => state.globalReports.searchText);
-    const [regions, setRegions] = useState([]);
+    const reports = useSelector(state => state.globalReports.reports);
     useEffect(() => {
         axios.get(API_URL + 'latest_day_reports')
             .then((response) => {
-                setRegions(response.data);
-                console.log(response.data);
+                dispatch(setGlobalReports(response.data))
             })
     }, []);
     return <React.Fragment>
         {
-            regions.map(
-                (value, index) =>
+            reports.map(
+                (value) =>
                     (
                         value.region_name.toLowerCase().includes(searchText.toLowerCase()) ?
                         <RegionsTableRow regionDayReport={value} key={value.region_id}/>
@@ -99,6 +99,17 @@ const FilterBox = () => {
 };
 
 
+const LoadingCircle = () => {
+    const classes = useStyles();
+    const reportsLoaded = useSelector(state => state.globalReports.reportsLoaded);
+    if (reportsLoaded) return null;
+    return (
+        <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>
+            <CircularProgress/>
+        </Grid>
+    )
+};
+
 function App() {
     const classes = useStyles();
     return (
@@ -116,7 +127,7 @@ function App() {
             </AppBar>
             <Container component={Paper}>
                 <FilterBox/>
-                <TableContainer component={Paper} style={{marginTop: '20px'}}>
+                <TableContainer component={Paper} style={{marginTop: '20px', marginBottom: '20px', maxHeight: '100vh'}}>
                     <Table style={{maxWidth: '100%'}} stickyHeader>
                         <TableHead>
                             <TableRow>
@@ -131,9 +142,7 @@ function App() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>
-                    <CircularProgress/>
-                </Grid>
+                <LoadingCircle/>
             </Container>
         </React.Fragment>
     );
