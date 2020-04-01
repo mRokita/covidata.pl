@@ -257,16 +257,23 @@ async def test_auth():
 
 @pytest.mark.asyncio
 async def test_read_downloaded_reports(client):
-    res = await client.get('/api/v1/downloaded_reports')
+    res = await client.get(f'/api/v1/downloaded_reports'
+                           f'?type={ReportType.GLOBAL.value}')
     assert res.status_code == 200
     assert res.json() == []
 
-    mock = DownloadedReport(date=today)
+    res = await client.get(f'/api/v1/downloaded_reports'
+                           f'?type={ReportType.LOCAL.value}')
+    assert res.status_code == 200
+    assert res.json() == []
+
+    mock = DownloadedReport(date=today, type=ReportType.LOCAL)
     await insert_downloaded_report(
         mock
     )
 
-    res = await client.get('/api/v1/downloaded_reports')
+    res = await client.get('/api/v1/downloaded_reports'
+                           f'?type={ReportType.LOCAL.value}')
     assert res.status_code == 200
     assert [DownloadedReport(**r).dict()
             for r in res.json()] == [mock.dict()]
@@ -308,10 +315,7 @@ async def test_create_downloaded_report(client, auth_headers):
     assert res.status_code == 200
 
     res = await client.get('/api/v1/downloaded_reports')
-    assert res.status_code == 200
-    assert [DownloadedReport(**r)
-            for r in res.json()] == [mock_tomorrow, mock]
-
+    assert res.status_code == 422
     res = await client.get('/api/v1/downloaded_reports?'
                            f'type={ReportType.GLOBAL.value}')
     assert res.status_code == 200
