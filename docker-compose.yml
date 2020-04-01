@@ -45,6 +45,8 @@ services:
       POSTGRES_DB: covidata
     networks:
       - default
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   crawler:
     image: "registry.gitlab.com/mrokita/covidata.pl:crawler-${IMAGE_TAG}"
     build:
@@ -56,3 +58,5 @@ services:
 networks:
   traefik:
     external: true
+volumes:
+  pgdata:
