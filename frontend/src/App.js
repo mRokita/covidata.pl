@@ -19,6 +19,10 @@ import Grid from "@material-ui/core/Grid";
 import {CircularProgress} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
+import {useDispatch, useSelector} from "react-redux";
+import {setSearchText} from "./redux/actions";
+
+
 const axios = require('axios').default;
 
 
@@ -49,6 +53,7 @@ let RegionsTableRow = (props) => {
 
 
 let RegionsTableBody = () => {
+    const searchText = useSelector(state => state.globalReports.searchText);
     const [regions, setRegions] = useState([]);
     useEffect(() => {
         axios.get(API_URL + 'latest_day_reports')
@@ -60,12 +65,37 @@ let RegionsTableBody = () => {
     return <React.Fragment>
         {
             regions.map(
-                (value, index) => (
-                    <RegionsTableRow regionDayReport={value}/>
-                )
+                (value, index) =>
+                    (
+                        value.region_name.toLowerCase().includes(searchText.toLowerCase()) ?
+                        <RegionsTableRow regionDayReport={value} key={value.region_id}/>
+                        :
+                        null
+                    )
             )
         }
     </React.Fragment>
+};
+
+
+const FilterBox = () => {
+    const dispatch = useDispatch();
+    const searchText = useSelector(state => state.globalReports.searchText);
+    return (
+        <Grid xs={12} style={{paddingTop: '20px'}}>
+            <Grid xs={12} item>
+                <form noValidate autoComplete={"off"}>
+                    <TextField label="Szukaj"
+                               value={searchText}
+                               onChange={
+                                       e => dispatch(setSearchText(e.target.value))
+                               }
+                               variant="outlined"
+                               style={{width: '100%'}}/>
+                </form>
+            </Grid>
+        </Grid>
+    );
 };
 
 
@@ -77,7 +107,7 @@ function App() {
             <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
+                        <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
                         covidata.pl
@@ -85,27 +115,21 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Container component={Paper}>
-                <Grid xs={12} style={{paddingTop: '20px'}}>
-                    <Grid xs={12} item>
-                        <form noValidate autoComplete={"off"}>
-                        <TextField label="Szukaj" variant="outlined" style={{width: '100%'}}/>
-                        </form>
-                    </Grid>
-                </Grid>
+                <FilterBox/>
                 <TableContainer component={Paper} style={{marginTop: '20px'}}>
-                <Table style={{maxWidth: '100%'}} stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Kraj</TableCell>
-                            <TableCell style={{maxWidth: '25vw'}}>Zachor.</TableCell>
-                            <TableCell style={{maxWidth: '25vw'}}>Wyzdr.</TableCell>
-                            <TableCell style={{maxWidth: '20vw'}}>Zgony</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        <RegionsTableBody/>
-                    </TableBody>
-                </Table>
+                    <Table style={{maxWidth: '100%'}} stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Kraj</TableCell>
+                                <TableCell style={{maxWidth: '25vw'}}>Zachor.</TableCell>
+                                <TableCell style={{maxWidth: '25vw'}}>Wyzdr.</TableCell>
+                                <TableCell style={{maxWidth: '20vw'}}>Zgony</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <RegionsTableBody/>
+                        </TableBody>
+                    </Table>
                 </TableContainer>
                 <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>
                     <CircularProgress/>
