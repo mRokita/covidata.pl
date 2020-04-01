@@ -15,13 +15,13 @@ from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from auth import authenticate_user, create_access_token, get_current_user
 from database import database
 from queries import filter_by_day_report, get_day_report, day_report_exists, \
-    get_downloaded_global_reports, insert_downloaded_global_report, \
-    downloaded_global_report_exists
+    get_downloaded_reports, insert_downloaded_report, \
+    downloaded_report_exists
 from schemas import DayReport, Region, RegionCreate, HTTP409, \
-    DayReportCreate, DownloadedGlobalReport, LatestDayReport
+    DayReportCreate, DownloadedReport, LatestDayReport
 from settings import SERVICE_TOKEN
 from secrets import compare_digest
-from tables import regions, day_reports
+from tables import regions, day_reports, ReportType
 
 app = FastAPI()
 
@@ -145,7 +145,6 @@ async def read_latest_day_reports():
             regions.c.id == day_reports.c.region_id)
     ).order_by(-day_reports.c.total_cases)
     ret = await database.fetch_all(query)
-    print(ret)
     return ret
 
 
@@ -229,20 +228,20 @@ async def delete_day_report(region_id: int,
         filter_by_day_report(day_reports.delete(), region_id, date))
 
 
-@app.get("/api/v1/downloaded_global_reports",
-         response_model=List[DownloadedGlobalReport])
-async def read_downloaded_global_reports():
+@app.get("/api/v1/downloaded_reports",
+         response_model=List[DownloadedReport])
+async def read_downloaded_reports(type: ReportType = None):
     """Get a list of reports downloaded from CSSEGISandData by the crawler"""
-    return await get_downloaded_global_reports()
+    return await get_downloaded_reports(type)
 
 
-@app.post("/api/v1/downloaded_global_reports", responses={'409': {}})
-async def create_downloaded_global_report(
-        downloaded_global_report: DownloadedGlobalReport,
+@app.post("/api/v1/downloaded_reports", responses={'409': {}})
+async def create_downloaded_report(
+        downloaded_report: DownloadedReport,
         username: str = Depends(get_current_user)):  # noqa
-    if await downloaded_global_report_exists(downloaded_global_report):
+    if await downloaded_report_exists(downloaded_report):
         return JSONResponse(status_code=409)
-    await insert_downloaded_global_report(downloaded_global_report)
+    await insert_downloaded_report(downloaded_report)
 
 
 if __name__ == "__main__":

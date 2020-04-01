@@ -5,14 +5,14 @@ from starlette.config import environ
 # Switch database to sqlite before DATABASE_URL gets loaded
 environ['TESTING'] = 'True'
 
-from queries import insert_downloaded_global_report
+from queries import insert_downloaded_report
 import datetime
 import pytest
 from sqlalchemy_utils import drop_database, database_exists
 from auth import authenticate_user, get_password_hash
-from schemas import DayReport, UserCreate, Region, DownloadedGlobalReport
+from schemas import DayReport, UserCreate, Region, DownloadedReport
 from database import database
-from tables import regions, day_reports, users
+from tables import regions, day_reports, users, ReportType
 from settings import DATABASE_URL
 from main import app
 from alembic.config import Config as AlembicConfig
@@ -256,59 +256,71 @@ async def test_auth():
 
 
 @pytest.mark.asyncio
-async def test_read_downloaded_global_reports(client):
-    res = await client.get('/api/v1/downloaded_global_reports')
+async def test_read_downloaded_reports(client):
+    res = await client.get('/api/v1/downloaded_reports')
     assert res.status_code == 200
     assert res.json() == []
 
-    mock = DownloadedGlobalReport(date=today)
-    await insert_downloaded_global_report(
+    mock = DownloadedReport(date=today)
+    await insert_downloaded_report(
         mock
     )
 
-    res = await client.get('/api/v1/downloaded_global_reports')
+    res = await client.get('/api/v1/downloaded_reports')
     assert res.status_code == 200
-    assert [DownloadedGlobalReport(**r).dict()
+    assert [DownloadedReport(**r).dict()
             for r in res.json()] == [mock.dict()]
 
 
 @pytest.mark.asyncio
-async def test_create_downloaded_global_report(client, auth_headers):
-    mock_tomorrow = DownloadedGlobalReport(
+async def test_create_downloaded_report(client, auth_headers):
+    mock_tomorrow = DownloadedReport(
         date=today+datetime.timedelta(days=1))
 
     res = await client.post(
-        '/api/v1/downloaded_global_reports',
+        '/api/v1/downloaded_reports',
         data=mock_tomorrow.json()
     )
     assert res.status_code == 401
 
     res = await client.post(
-        '/api/v1/downloaded_global_reports',
+        '/api/v1/downloaded_reports',
         headers=auth_headers,
         data=mock_tomorrow.json()
     )
     assert res.status_code == 200
 
     res = await client.post(
-        '/api/v1/downloaded_global_reports',
+        '/api/v1/downloaded_reports',
         headers=auth_headers,
         data=mock_tomorrow.json()
     )
     assert res.status_code == 409
 
-    mock = DownloadedGlobalReport(date=today)
+    mock = DownloadedReport(date=today, type=ReportType.LOCAL)
     res = await client.post(
-        '/api/v1/downloaded_global_reports',
+        '/api/v1/downloaded_reports',
         headers=auth_headers,
         data=mock.json()
     )
     assert res.status_code == 200
 
-    res = await client.get('/api/v1/downloaded_global_reports')
+    res = await client.get('/api/v1/downloaded_reports')
     assert res.status_code == 200
-    assert [DownloadedGlobalReport(**r)
+    assert [DownloadedReport(**r)
             for r in res.json()] == [mock_tomorrow, mock]
+
+    res = await client.get('/api/v1/downloaded_reports?'
+                           f'type={ReportType.GLOBAL.value}')
+    assert res.status_code == 200
+    assert [DownloadedReport(**r)
+            for r in res.json()] == [mock_tomorrow]
+
+    res = await client.get(f'/api/v1/downloaded_reports?'
+                           f'type={ReportType.LOCAL.value}')
+    assert res.status_code == 200
+    assert [DownloadedReport(**r)
+            for r in res.json()] == [mock]
 
 
 @pytest.mark.asyncio

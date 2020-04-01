@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 import datetime
 
+from tables import ReportType
+
 
 class RegionBase(BaseModel):
     name: str
@@ -34,8 +36,9 @@ class LatestDayReport(DayReport):
     region_name: str
 
 
-class DownloadedGlobalReport(BaseModel):
+class DownloadedReport(BaseModel):
     date: datetime.date
+    type: ReportType = ReportType.GLOBAL
 
 
 class HTTP409(BaseModel):

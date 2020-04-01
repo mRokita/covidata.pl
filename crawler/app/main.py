@@ -130,7 +130,7 @@ def download_global_data_for_day(day: datetime.datetime):
                 raise HTTPError(res.status_code)
     with Client() as client:
         res = client.post(
-            'downloaded_global_reports',
+            'downloaded_reports',
             json={'date': date_str(day)}
         )
     if not res.status_code == 200:
@@ -152,7 +152,7 @@ def download_global_data():
     today = datetime.datetime.today()
 
     with Client() as client:
-        res = client.get('downloaded_global_reports')
+        res = client.get('downloaded_reports')
         if res.status_code != 200:
             raise HTTPError(res.status_code)
     required = date_set(

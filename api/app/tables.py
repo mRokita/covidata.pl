@@ -5,10 +5,11 @@ because encode/databases doesn't really support it.
 Specify the default value in shemas.py instead, and just use
 BaseModel.get(exclude_unset=True) for SQL UPDATE queries
 """
+import enum
+
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, \
     UniqueConstraint
-from sqlalchemy import Table, MetaData
-
+from sqlalchemy import Table, MetaData, Enum
 
 metadata = MetaData()
 
@@ -32,6 +33,7 @@ day_reports = Table(
     UniqueConstraint('date', 'region_id')
 )
 
+
 users = Table(
     'users',
     metadata,
@@ -40,8 +42,16 @@ users = Table(
     Column('hashed_password', String),
 )
 
-downloaded_global_reports = Table(
-    'downloaded_global_reports',
+
+class ReportType(enum.Enum):
+    GLOBAL = 'global'
+    LOCAL = 'local'
+
+
+downloaded_reports = Table(
+    'downloaded_reports',
     metadata,
-    Column('date', Date, primary_key=True, index=True, unique=True)
+    Column('date', Date, primary_key=True, index=True, nullable=False),
+    Column('type', Enum(ReportType), primary_key=True, index=True, nullable=False),
+    UniqueConstraint('date', 'type')
 )

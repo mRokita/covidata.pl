@@ -4,8 +4,8 @@ from sqlalchemy import and_
 from sqlalchemy.sql import TableClause
 
 from database import database
-from schemas import DayReport, User, DownloadedGlobalReport
-from tables import day_reports, users, downloaded_global_reports
+from schemas import DayReport, User, DownloadedReport
+from tables import day_reports, users, downloaded_reports, ReportType
 
 
 def filter_by_day_report(query: TableClause,
@@ -33,23 +33,27 @@ async def get_user(username: str):
     return User(**db_user) if db_user else None
 
 
-async def downloaded_global_report_exists(
-        downloaded_global_report: DownloadedGlobalReport):
-    query = downloaded_global_reports.select().where(
-        downloaded_global_reports.c.date == downloaded_global_report.date
+async def downloaded_report_exists(
+        downloaded_report: DownloadedReport):
+    query = downloaded_reports.select().where(
+        and_(
+            downloaded_reports.c.date == downloaded_report.date,
+            downloaded_reports.c.type == downloaded_report.type
+        )
     )
     return bool(await database.fetch_val(query))
 
 
-async def insert_downloaded_global_report(
-        global_day_report: DownloadedGlobalReport):
+async def insert_downloaded_report(
+        downloaded_report: DownloadedReport):
     return await database.execute(
-        downloaded_global_reports.insert(),
-        values=global_day_report.dict()
+        downloaded_reports.insert(),
+        values=downloaded_report.dict()
     )
 
 
-async def get_downloaded_global_reports():
-    return await database.fetch_all(
-        downloaded_global_reports.select()
-    )
+async def get_downloaded_reports(type: ReportType = None):
+    query = downloaded_reports.select()
+    if type:
+        query = query.where(downloaded_reports.c.type == type)
+    return await database.fetch_all(query)
