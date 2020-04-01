@@ -82,7 +82,7 @@ const FilterBox = () => {
     const dispatch = useDispatch();
     const searchText = useSelector(state => state.globalReports.searchText);
     return (
-        <Grid xs={12} style={{paddingTop: '20px'}}>
+        <Grid xs={12}>
             <Grid xs={12} item>
                 <form noValidate autoComplete={"off"}>
                     <TextField label="Szukaj"
@@ -125,10 +125,10 @@ function App() {
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Container component={Paper}>
-                <FilterBox/>
-                <TableContainer component={Paper} style={{marginTop: '20px', marginBottom: '20px', maxHeight: '100vh'}}>
-                    <Table style={{maxWidth: '100%'}} stickyHeader>
+            <Container component={Paper} style={{paddingTop: '20px', paddingBottom: '20px'}}>
+                <FilterBox />
+                <TableContainer component={Paper} style={{marginTop: '20px'}}>
+                    <Table style={{maxWidth: '100%', maxHeight: '100vh'}} stickyHeader>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Kraj</TableCell>
