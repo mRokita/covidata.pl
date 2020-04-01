@@ -51,7 +51,7 @@ class ReportType(enum.Enum):
 downloaded_reports = Table(
     'downloaded_reports',
     metadata,
-    Column('date', Date, primary_key=True, index=True, nullable=False),
-    Column('type', Enum(ReportType), primary_key=True, index=True, nullable=False),
+    Column('date', Date, nullable=False, unique=False),
+    Column('type', Enum(ReportType), nullable=False, unique=False),
     UniqueConstraint('date', 'type')
 )

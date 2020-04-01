@@ -38,7 +38,7 @@ class LatestDayReport(DayReport):
 
 class DownloadedReport(BaseModel):
     date: datetime.date
-    type: ReportType = ReportType.GLOBAL
+    type: ReportType
 
 
 class HTTP409(BaseModel):

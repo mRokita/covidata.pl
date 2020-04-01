@@ -230,7 +230,7 @@ async def delete_day_report(region_id: int,
 
 @app.get("/api/v1/downloaded_reports",
          response_model=List[DownloadedReport])
-async def read_downloaded_reports(type: ReportType = None):
+async def read_downloaded_reports(type: ReportType):
     """Get a list of reports downloaded from CSSEGISandData by the crawler"""
     return await get_downloaded_reports(type)
 

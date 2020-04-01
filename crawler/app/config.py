@@ -27,6 +27,12 @@ HARD_COUNTRY_FIXES = {
     'St Martin': 'St. Martin'
 }
 
+PL_GOV_URL = 'https://www.gov.pl/web/koronawirus/wykaz-zarazen-koronawirusem-sars-cov-2'
+WAYBACK_SNAPSHOT_LIST_URL = ('http://web.archive.org/__wb/calendarcaptures/2?'
+                             'url=https%3A%2F%2Fwww.gov.pl%2Fweb%2Fkoronawirus'
+                             '%2Fwykaz-zarazen-koronawirusem-sars-cov-2&'
+                             'date=2020')
+
 SKIPPED_GLOBAL_COUNTRIES = [
     'North Ireland',
     'Republic of Ireland'

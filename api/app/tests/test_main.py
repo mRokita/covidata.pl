@@ -275,7 +275,9 @@ async def test_read_downloaded_reports(client):
 @pytest.mark.asyncio
 async def test_create_downloaded_report(client, auth_headers):
     mock_tomorrow = DownloadedReport(
-        date=today+datetime.timedelta(days=1))
+        date=today+datetime.timedelta(days=1),
+        type=ReportType.GLOBAL
+    )
 
     res = await client.post(
         '/api/v1/downloaded_reports',
