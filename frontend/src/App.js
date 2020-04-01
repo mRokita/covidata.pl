@@ -85,10 +85,10 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Container component={Paper}>
-                <Grid xs={12} style={{marginTop: '20px'}}>
+                <Grid xs={12} style={{paddingTop: '20px'}}>
                     <Grid xs={12} item>
                         <form noValidate autoComplete={"off"}>
-                        <TextField label="Szukaj" variant="outlined" defaultValue={searchText} style={{width: '100%'}}/>
+                        <TextField label="Szukaj" variant="outlined" style={{width: '100%'}}/>
                         </form>
                     </Grid>
                 </Grid>
