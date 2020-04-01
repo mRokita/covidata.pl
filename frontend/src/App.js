@@ -20,6 +20,8 @@ import {CircularProgress} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 const axios = require('axios').default;
+
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -66,9 +68,9 @@ let RegionsTableBody = () => {
     </React.Fragment>
 };
 
+
 function App() {
     const classes = useStyles();
-    const [searchText, setSearchText] = useState();
     return (
         <React.Fragment>
             <CssBaseline/>
@@ -82,7 +84,7 @@ function App() {
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Container>
+            <Container component={Paper}>
                 <Grid xs={12} style={{marginTop: '20px'}}>
                     <Grid xs={12} item>
                         <form noValidate autoComplete={"off"}>
@@ -109,7 +111,6 @@ function App() {
                     <CircularProgress/>
                 </Grid>
             </Container>
-
         </React.Fragment>
     );
 }
