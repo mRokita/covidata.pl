@@ -38,7 +38,7 @@ import Legend from "recharts/lib/component/Legend";
 import ResponsiveContainer from "recharts/lib/component/ResponsiveContainer";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-
+import {Alert} from '@material-ui/lab';
 
 const axios = require('axios').default;
 
@@ -76,7 +76,7 @@ let RegionDetailModal = (props) => {
     const drp = props.regionDayReport;
     const theme = useTheme();
     useEffect(() => {
-        if(data.length) return;
+        if (data.length) return;
         console.log('load');
         axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
             .then((response) => {
@@ -102,37 +102,44 @@ let RegionDetailModal = (props) => {
                     Statystyki
                 </Typography>
                 <Box boxShadow={3} style={{padding: '10px'}}>
-                    <ResponsiveContainer width="100%" height={500}>
+                    <ResponsiveContainer width="100%" height={onMobile ? 340 : 500}>
                         <LineChart data={data} margin={{right: 50, left: 0, bottom: 0, top: 50}}>
                             <CartesianGrid strokeDasharray="3 3"/>
                             <XAxis dataKey={"date"}/>
                             <YAxis/>
                             <Tooltip/>
-                            { showCases ? <Line type="monotone" name="Łączna liczba zachorowań" dataKey="total_cases" stroke="#8884d8" /> : null }
-                            { showDeaths ? <Line type="monotone" name="Łączna liczba zgonów" dataKey="total_deaths" stroke="#000000" /> : null }
-                            { showRecoveries ? <Line type="monotone" name="Łączna liczba wyzdrowień" dataKey="total_recoveries" stroke="#56e336" /> : null }
+                            {showCases ? <Line type="monotone" name="Łączna liczba zachorowań" dataKey="total_cases"
+                                               stroke="#8884d8"/> : null}
+                            {showDeaths ? <Line type="monotone" name="Łączna liczba zgonów" dataKey="total_deaths"
+                                                stroke="#000000"/> : null}
+                            {showRecoveries ?
+                                <Line type="monotone" name="Łączna liczba wyzdrowień" dataKey="total_recoveries"
+                                      stroke="#56e336"/> : null}
                         </LineChart>
                     </ResponsiveContainer>
                     <Grid container direction="column"
                           alignItems="center"
                           justify="center"
-                    style={{margin: 20}}>
+                          style={{padding: 20, width: '100%'}}>
                         <Grid item xs={4}>
-                    <FormControlLabel
-                        control={<Checkbox checked={showCases}  style={{color: "#8884d8"}} onChange={toggleCases} name="Zachorowania" />}
-                        onChange={toggleCases}
-                        label="Zachorowania"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={showDeaths} style={{color: "#000000"}} onChange={toggleDeaths} name="Zgony" />}
-                        label="Zgony"
-                        onChange={toggleDeaths}
-                    />
-                    <FormControlLabel
-                        control={<Checkbox checked={showRecoveries} style={{color: "#56e336"}} onChange={toggleRecoveries} name="Wyzdrowienia" />}
-                        label="Wyzdrowienia"
-                        onChange={toggleRecoveries}
-                    /></Grid>
+                            <FormControlLabel
+                                control={<Checkbox checked={showCases} style={{color: "#8884d8"}} onChange={toggleCases}
+                                                   name="Zachorowania"/>}
+                                onChange={toggleCases}
+                                label="Zachorowania"
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={showDeaths} style={{color: "#000000"}}
+                                                   onChange={toggleDeaths} name="Zgony"/>}
+                                label="Zgony"
+                                onChange={toggleDeaths}
+                            />
+                            <FormControlLabel
+                                control={<Checkbox checked={showRecoveries} style={{color: "#56e336"}}
+                                                   onChange={toggleRecoveries} name="Wyzdrowienia"/>}
+                                label="Wyzdrowienia"
+                                onChange={toggleRecoveries}
+                            /></Grid>
                     </Grid>
                 </Box>
             </DialogContent>
@@ -216,6 +223,16 @@ const LoadingCircle = () => {
     )
 };
 
+const ChartsAlert = () => {
+    const reportsLoaded = useSelector(state => state.globalReports.reportsLoaded);
+    if (!reportsLoaded) return null;
+    return (
+        <Alert severity="info" color="info" style={{marginTop: 20}}>
+            Kliknij wiersz w tabeli, aby zobaczyć wykresy
+        </Alert>
+    );
+};
+
 function App() {
     const classes = useStyles();
     return (
@@ -233,6 +250,7 @@ function App() {
             </AppBar>
             <Container component={Paper} style={{paddingTop: '20px', paddingBottom: '20px'}}>
                 <FilterBox/>
+                <ChartsAlert/>
                 <TableContainer component={Paper} style={{marginTop: '20px'}}>
                     <Table style={{maxWidth: '100%', maxHeight: '100vh'}} stickyHeader>
                         <TableHead>
