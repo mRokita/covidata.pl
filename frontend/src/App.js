@@ -16,11 +16,26 @@ import Table from "@material-ui/core/Table";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableBody from "@material-ui/core/TableBody";
 import Grid from "@material-ui/core/Grid";
-import {CircularProgress} from "@material-ui/core";
+import {CircularProgress, useMediaQuery} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import {useDispatch, useSelector} from "react-redux";
 import {setGlobalReports, setSearchText} from "./redux/actions";
+import Dialog from "@material-ui/core/Dialog";
+import CloseIcon from '@material-ui/icons/Close';
+import purple from "@material-ui/core/colors/purple";
+import Grow from "@material-ui/core/Grow";
+import useTheme from "@material-ui/core/styles/useTheme";
+import DialogContent from "@material-ui/core/DialogContent";
+import Box from "@material-ui/core/Box";
+import XAxis from "recharts/lib/cartesian/XAxis";
+import CartesianGrid from "recharts/lib/cartesian/CartesianGrid";
+import LineChart from "recharts/lib/chart/LineChart";
+import YAxis from "recharts/lib/cartesian/YAxis";
+import Tooltip from "recharts/lib/component/Tooltip";
+import Line from "recharts/lib/cartesian/Line";
+import Legend from "recharts/lib/component/Legend";
+import ResponsiveContainer from "recharts/lib/component/ResponsiveContainer";
 
 
 const axios = require('axios').default;
@@ -36,18 +51,83 @@ const useStyles = makeStyles((theme) => ({
     title: {
         flexGrow: 1,
     },
+    detailtoolbar: {
+        background: purple[800],
+        color: 'white'
+    },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 }));
+
+let RegionDetailModal = (props) => {
+    const classes = useStyles();
+    const [data, setData] = useState([]);
+    const drp = props.regionDayReport;
+    const theme = useTheme();
+    useEffect(() => {
+        if(data.length) return;
+        console.log('load');
+        axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
+            .then((response) => {
+                setData(response.data);
+            })
+    }, [props.show]);
+
+    const onMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    return (
+        <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Grow}>
+            <AppBar position="static">
+                <Toolbar className={classes.detailtoolbar}>
+                    <Typography variant="h6" className={classes.title}>
+                        {drp.region_name}
+                    </Typography>
+                    <IconButton edge="end" color="inherit" onClick={props.onClose} aria-label="close">
+                        <CloseIcon/>
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <DialogContent style={{padding: '20px'}}>
+                <Typography variant="h6" style={{marginBottom: 20}}>
+                    Statystyki
+                </Typography>
+                <Box boxShadow={3} style={{padding: '10px'}}>
+                    <ResponsiveContainer width="100%" height={500}>
+                        <LineChart data={data} margin={{right: 50, left: 0, bottom: 0, top: 0}}>
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        <XAxis dataKey={"date"}/>
+                        <YAxis/>
+                        <Tooltip/>
+                        <Legend />
+                        <Line type="monotone" name="Łączna liczba zachorowań" dataKey="total_cases" stroke="#8884d8" />
+                        <Line type="monotone" name="Łączna liczba zgonów" dataKey="total_deaths" stroke="#000000" />
+                        <Line type="monotone" name="Łączna liczba wyzdrowień" dataKey="total_recoveries" stroke="#56e336" />
+
+                        </LineChart>
+                    </ResponsiveContainer>
+
+                </Box>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
 
 let RegionsTableRow = (props) => {
-    let drp = props.regionDayReport;
+    const [selected, setSelected] = useState(false);
+    const drp = props.regionDayReport;
     return (
-        <TableRow key={drp.region_id}>
-            <TableCell style={{maxWidth: '30vw'}}>{drp.region_name}</TableCell>
-            <TableCell style={{maxWidth: '20vw'}}>{drp.total_cases}</TableCell>
-            <TableCell style={{maxWidth: '20vw'}}>{drp.total_recoveries}</TableCell>
-            <TableCell style={{maxWidth: '20vw'}}>{drp.total_deaths}</TableCell>
-        </TableRow>
+        <React.Fragment>
+            <TableRow key={drp.region_id} onClick={() => setSelected(true)} style={{cursor: 'pointer'}}>
+                <TableCell style={{maxWidth: '30vw'}}>{drp.region_name}</TableCell>
+                <TableCell style={{maxWidth: '20vw'}}>{drp.total_cases}</TableCell>
+                <TableCell style={{maxWidth: '20vw'}}>{drp.total_recoveries}</TableCell>
+                <TableCell style={{maxWidth: '20vw'}}>{drp.total_deaths}</TableCell>
+            </TableRow>
+            <RegionDetailModal show={selected} onClose={() => setSelected(false)} regionDayReport={drp}/>
+        </React.Fragment>
     )
 };
 
@@ -68,9 +148,9 @@ let RegionsTableBody = () => {
                 (value) =>
                     (
                         value.region_name.toLowerCase().includes(searchText.toLowerCase()) ?
-                        <RegionsTableRow regionDayReport={value} key={value.region_id}/>
-                        :
-                        null
+                            <RegionsTableRow regionDayReport={value} key={value.region_id}/>
+                            :
+                            null
                     )
             )
         }
@@ -88,7 +168,7 @@ const FilterBox = () => {
                     <TextField label="Szukaj"
                                value={searchText}
                                onChange={
-                                       e => dispatch(setSearchText(e.target.value))
+                                   e => dispatch(setSearchText(e.target.value))
                                }
                                variant="outlined"
                                style={{width: '100%'}}/>
@@ -126,7 +206,7 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Container component={Paper} style={{paddingTop: '20px', paddingBottom: '20px'}}>
-                <FilterBox />
+                <FilterBox/>
                 <TableContainer component={Paper} style={{marginTop: '20px'}}>
                     <Table style={{maxWidth: '100%', maxHeight: '100vh'}} stickyHeader>
                         <TableHead>
