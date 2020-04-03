@@ -36,6 +36,8 @@ import Tooltip from "recharts/lib/component/Tooltip";
 import Line from "recharts/lib/cartesian/Line";
 import Legend from "recharts/lib/component/Legend";
 import ResponsiveContainer from "recharts/lib/component/ResponsiveContainer";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 
 const axios = require('axios').default;
@@ -65,6 +67,12 @@ const useStyles = makeStyles((theme) => ({
 let RegionDetailModal = (props) => {
     const classes = useStyles();
     const [data, setData] = useState([]);
+    const [showCases, setShowCases] = useState(true);
+    const toggleCases = () => setShowCases(!showCases);
+    const [showDeaths, setShowDeaths] = useState(true);
+    const toggleDeaths = () => setShowDeaths(!showDeaths);
+    const [showRecoveries, setShowRecoveries] = useState(true);
+    const toggleRecoveries = () => setShowRecoveries(!showRecoveries);
     const drp = props.regionDayReport;
     const theme = useTheme();
     useEffect(() => {
@@ -95,19 +103,37 @@ let RegionDetailModal = (props) => {
                 </Typography>
                 <Box boxShadow={3} style={{padding: '10px'}}>
                     <ResponsiveContainer width="100%" height={500}>
-                        <LineChart data={data} margin={{right: 50, left: 0, bottom: 0, top: 0}}>
-                        <CartesianGrid strokeDasharray="3 3"/>
-                        <XAxis dataKey={"date"}/>
-                        <YAxis/>
-                        <Tooltip/>
-                        <Legend />
-                        <Line type="monotone" name="Łączna liczba zachorowań" dataKey="total_cases" stroke="#8884d8" />
-                        <Line type="monotone" name="Łączna liczba zgonów" dataKey="total_deaths" stroke="#000000" />
-                        <Line type="monotone" name="Łączna liczba wyzdrowień" dataKey="total_recoveries" stroke="#56e336" />
-
+                        <LineChart data={data} margin={{right: 50, left: 0, bottom: 0, top: 50}}>
+                            <CartesianGrid strokeDasharray="3 3"/>
+                            <XAxis dataKey={"date"}/>
+                            <YAxis/>
+                            <Tooltip/>
+                            { showCases ? <Line type="monotone" name="Łączna liczba zachorowań" dataKey="total_cases" stroke="#8884d8" /> : null }
+                            { showDeaths ? <Line type="monotone" name="Łączna liczba zgonów" dataKey="total_deaths" stroke="#000000" /> : null }
+                            { showRecoveries ? <Line type="monotone" name="Łączna liczba wyzdrowień" dataKey="total_recoveries" stroke="#56e336" /> : null }
                         </LineChart>
                     </ResponsiveContainer>
-
+                    <Grid container direction="column"
+                          alignItems="center"
+                          justify="center"
+                    style={{margin: 20}}>
+                        <Grid item xs={4}>
+                    <FormControlLabel
+                        control={<Checkbox checked={showCases}  style={{color: "#8884d8"}} onChange={toggleCases} name="Zachorowania" />}
+                        onChange={toggleCases}
+                        label="Zachorowania"
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={showDeaths} style={{color: "#000000"}} onChange={toggleDeaths} name="Zgony" />}
+                        label="Zgony"
+                        onChange={toggleDeaths}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={showRecoveries} style={{color: "#56e336"}} onChange={toggleRecoveries} name="Wyzdrowienia" />}
+                        label="Wyzdrowienia"
+                        onChange={toggleRecoveries}
+                    /></Grid>
+                    </Grid>
                 </Box>
             </DialogContent>
         </Dialog>
