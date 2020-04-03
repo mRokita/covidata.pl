@@ -16,4 +16,5 @@ if __name__ == '__main__':
             continue
         except Exception as e:
             logger.error(str(e))
+            sleep(60)
 

@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict
+from typing import Dict, Set
 
 import httpx
 from loguru import logger
@@ -21,6 +21,36 @@ class Client(httpx.Client):
 class HTTPError(Exception):
     pass
 
+
+def get_missing_record_dates(type: str):
+    """
+    Get dates with missing records for type
+    :param type: common.GLOBAL or common.LOCAL
+    :return:
+    """
+    if type not in (GLOBAL, LOCAL):
+        raise ValueError(f'Type must be one of ({GLOBAL}, {LOCAL}")')
+    today = datetime.datetime.today()
+    with Client() as client:
+        res = client.get(f'downloaded_reports?type={type}')
+        if res.status_code != 200:
+            raise HTTPError(res.status_code)
+    downloaded = {date_from_str(d['date']) for d in res.json()}
+    required = date_set(
+        start=datetime.datetime(year=2020, month=1, day=22),
+        end=today
+    )
+    missing = required - downloaded
+    return missing
+
+
+def date_set(
+        start: datetime.datetime, end: datetime.date
+) -> Set[datetime.datetime]:
+    # We don't want to download for today, because they update it the next day.
+    # No need for days += 1
+    days = (end - start).days
+    return {start + datetime.timedelta(days=i) for i in range(days)}
 
 def date_str(date: datetime.datetime) -> str:
     return datetime.datetime.strftime(date, "%Y-%m-%d")

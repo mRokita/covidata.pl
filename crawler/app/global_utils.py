@@ -8,7 +8,8 @@ import pandas
 import pycountry
 
 from common import HTTPError, get_regions, submit_region, submit_day_report, \
-    submit_download_success, GLOBAL, date_from_str, Client
+    submit_download_success, GLOBAL, date_from_str, Client, date_set, \
+    get_missing_record_dates
 from config import HARD_COUNTRY_FIXES, SKIPPED_GLOBAL_COUNTRIES
 
 polish = gettext.translation('iso3166',
@@ -82,27 +83,7 @@ def download_global_data_for_day(day: datetime.datetime):
     submit_download_success(day, GLOBAL)
 
 
-def date_set(
-        start: datetime.datetime, end: datetime.date
-) -> Set[datetime.datetime]:
-    # We don't want to download for today, because they update it the next day.
-    # No need for days += 1
-    days = (end - start).days
-    return {start + datetime.timedelta(days=i) for i in range(days)}
-
-
 def download_global_data():
-    today = datetime.datetime.today()
-
-    with Client() as client:
-        res = client.get('downloaded_reports?type=global')
-        if res.status_code != 200:
-            raise HTTPError(res.status_code)
-    required = date_set(
-        start=datetime.datetime(year=2020, month=1, day=22),
-        end=today
-    )
-    downloaded = {date_from_str(d['date']) for d in res.json()}
-    required -= downloaded
-    for d in sorted(required):
+    missing = get_missing_record_dates(GLOBAL)
+    for d in sorted(missing):
         download_global_data_for_day(d)
