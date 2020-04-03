@@ -167,7 +167,9 @@ async def update_region(
          response_model=List[DayReport])
 async def read_day_reports(region_id: int):
     return await database.fetch_all(
-        day_reports.select().where(day_reports.c.region_id == region_id))
+        day_reports.select().where(
+            day_reports.c.region_id == region_id
+        ).order_by(day_reports.c.date))
 
 
 @app.get("/api/v1/regions/{region_id}/day_reports/{date}",
