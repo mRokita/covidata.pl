@@ -77,7 +77,7 @@ export default function Main() {
                     showLabels
                     onChange={(event, newValue) => {
                         dispatch(clearReports(selectedReportType));
-                        loadReports(dispatch, selectedReportType);
+                        loadReports(dispatch, newValue);
                         setSelectedReportType(newValue);
                     }}
                     value={selectedReportType}>
