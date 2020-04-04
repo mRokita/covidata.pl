@@ -1,5 +1,5 @@
 import React from "react";
-import {GlobalFilterBox} from "./GlobalFilterBox";
+import {LatestFilterBox} from "./LatestFilterBox";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -8,11 +8,12 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import {LoadingCircle} from "../components/common/LoadingCircle";
 import {useSelector} from "react-redux";
-import {GlobalTableBody} from "./GlobalTableBody";
+import {LatestTableBody} from "./LatestTableBody";
 import {Alert} from "@material-ui/lab"
+import Typography from "@material-ui/core/Typography";
 
 
-const GlobalChartsAlert = () => {
+const LatestChartsAlert = () => {
     const reportsLoaded = useSelector(state => state.globalReports.reportsLoaded);
     if (!reportsLoaded) return null;
     return (
@@ -23,32 +24,35 @@ const GlobalChartsAlert = () => {
 };
 
 
-const GlobalTableHead = () => {
+const LatestTableHead = (props) => {
     return (
         <TableHead>
             <TableRow>
-                <TableCell>Kraj</TableCell>
-                <TableCell style={{maxWidth: '25vw'}}>Zachor.</TableCell>
-                <TableCell style={{maxWidth: '25vw'}}>Wyzdr.</TableCell>
-                <TableCell style={{maxWidth: '20vw'}}>Zgony</TableCell>
+                <TableCell><Typography noWrap variant={"body2"}>{props.regionLabel}</Typography></TableCell>
+                {
+                    props.columns.map(c =>
+                        <TableCell key={c.dataKey} style={{maxWidth: '15vw'}}><Typography noWrap variant={"body2"}>{c.name}</Typography></TableCell>
+                    )
+                }
             </TableRow>
         </TableHead>
     );
 };
 
 
-export const Global = () => {
+export const Latest = (props) => {
+    const settings = props.settings;
     return (
         <React.Fragment>
-            <GlobalFilterBox/>
-            <GlobalChartsAlert/>
+            <LatestFilterBox reducerKey={settings.reducerKey} reportType={settings.reportType}/>
+            <LatestChartsAlert/>
             <TableContainer component={Paper} style={{marginTop: '20px'}}>
                 <Table style={{maxWidth: '100%', maxHeight: '100vh'}} stickyHeader>
-                    <GlobalTableHead/>
-                    <GlobalTableBody/>
+                    <LatestTableHead columns={settings.columns} regionLabel={settings.regionLabel}/>
+                    <LatestTableBody settings={settings} reducerKey={settings.reducerKey}/>
                 </Table>
             </TableContainer>
-            <LoadingCircle/>
+            <LoadingCircle reducerKey={settings.reducerKey}/>
         </React.Fragment>
     )
 };

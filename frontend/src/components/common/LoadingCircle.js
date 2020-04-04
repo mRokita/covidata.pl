@@ -12,9 +12,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export const LoadingCircle = () => {
+export const LoadingCircle = (props) => {
     const classes = useStyles();
-    const reportsLoaded = useSelector(state => state.globalReports.reportsLoaded);
+    const reportsLoaded = useSelector(state => state[props.reducerKey].reportsLoaded);
     if (reportsLoaded) return null;
     return (
         <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>

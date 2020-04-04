@@ -9,12 +9,25 @@ import MenuIcon from "@material-ui/icons/Menu";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
-import {Global} from "./common/Global";
+import {Latest} from "./common/Latest";
+import Line from "recharts/lib/cartesian/Line";
+import {LineChart} from "recharts";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import Box from "@material-ui/core/Box";
+import SvgIcon from "@material-ui/core/SvgIcon";
+import Icon from "@material-ui/core/Icon";
+import Main from "./components/Main";
 
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+    },
+    title: {
+        width: '100%'
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -29,17 +42,15 @@ function App() {
             <CssBaseline/>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
+                    {/*<IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">*/}
+                    {/*    <MenuIcon/>*/}
+                    {/*</IconButton>*/}
+                    <Typography variant="h6" align={'center'} className={classes.title}>
                         covidata.pl
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Container component={Paper} style={{paddingTop: '20px', paddingBottom: '20px'}}>
-                <Global/>
-            </Container>
+                <Main style={{minHeight: '100vw'}}/>
         </React.Fragment>
     );
 }

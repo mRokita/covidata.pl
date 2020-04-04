@@ -1,8 +1,9 @@
 import { combineReducers } from "redux";
-import globalReportsReducer from "./globalReportsReducer";
+import reportsReducer from "./reportsReducer";
 
 const rootReducer = combineReducers({
-    globalReports: globalReportsReducer
+    globalReports: reportsReducer('global'),
+    localReports: reportsReducer('local')
 });
 
 export default rootReducer;

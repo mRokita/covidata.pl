@@ -1,4 +1,4 @@
-import {SET_GLOBAL_REPORTS, SET_SEARCH_TEXT} from "../actions";
+import {SET_REPORTS, SET_SEARCH_TEXT} from "../actions";
 
 
 const initState = {
@@ -8,15 +8,15 @@ const initState = {
 };
 
 
-const globalReportsReducer = (state = initState, action) => {
+const reportsReducer = (reportType) => (state = initState, action) => {
     switch (action.type) {
-        case SET_GLOBAL_REPORTS:
+        case reportType + '_' + SET_REPORTS:
             return {
                 ...state,
                 reports: action.payload,
-                reportsLoaded: true
+                reportsLoaded: action.payload.length
             };
-        case SET_SEARCH_TEXT:
+        case reportType + '_' + SET_SEARCH_TEXT:
             return {
                 ...state,
                 searchText: action.payload
@@ -26,4 +26,4 @@ const globalReportsReducer = (state = initState, action) => {
     }
 };
 
-export default globalReportsReducer
+export default reportsReducer

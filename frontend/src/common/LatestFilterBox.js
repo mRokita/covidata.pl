@@ -5,17 +5,17 @@ import {setSearchText} from "../redux/actions";
 import React from "react";
 
 
-export const GlobalFilterBox = () => {
+export const LatestFilterBox = (props) => {
     const dispatch = useDispatch();
-    const searchText = useSelector(state => state.globalReports.searchText);
+    const searchText = useSelector(state => (state[props.reducerKey].searchText));
     return (
-        <Grid xs={12}>
+        <Grid container>
             <Grid xs={12} item>
                 <form noValidate autoComplete={"off"}>
                     <TextField label="Szukaj"
                                value={searchText}
                                onChange={
-                                   e => dispatch(setSearchText(e.target.value))
+                                   e => dispatch(setSearchText(props.reportType, e.target.value))
                                }
                                variant="outlined"
                                style={{width: '100%'}}/>
