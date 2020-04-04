@@ -7,18 +7,20 @@ import DialogContent from "@material-ui/core/DialogContent";
 import axios from "axios";
 import {DetailModalToolbar} from "./DetailModalToolbar";
 import {CardChart} from "./CardChart";
+import Grid from "@material-ui/core/Grid";
 
 const DetailBody = (props) => {
     return props.settings.map(p =>
-        <CardChart component={p.component} title={p.title} data={props.data} key={p.title}>
-            {
-                p.series.map(s =>
-                    <s.component type="monotone" name={s.name} dataKey={s.dataKey} key={s.dataKey}
-                                 fill={s.stroke}
-                          stroke={s.stroke}/>
-                )
-            }
-        </CardChart>
+        <Grid item xs={12} md={6} key={p.title}>
+            <CardChart component={p.component} title={p.title} data={props.data}>
+                {
+                    p.series.map(s =>
+                        <s.component type="monotone" name={s.name} dataKey={s.dataKey} key={s.dataKey}
+                                     fill={s.stroke}
+                                     stroke={s.stroke}/>
+                    )
+                }
+            </CardChart></Grid>
     )
 };
 
@@ -26,24 +28,33 @@ export const DetailModal = (props) => {
     const [data, setData] = useState([]);
     const drp = props.regionDayReport;
     useEffect(() => {
-        console.log('effct');
         setData([]);
-        if(!props.show) return;
-        console.log('loadrepo');
+        if (!props.show) return;
         axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
             .then((response) => {
-                setData(response.data);
+                let reports = response.data;
+                let prev_report = {total_cases: 0};
+                reports = reports.map(
+                    report => {
+                        prev_report = {
+                            ...report,
+                            total_cases_delta: report.total_cases - prev_report.total_cases,
+                            active_cases: report.total_cases - report.total_deaths - report.total_recoveries
+                        };
+                        return prev_report
+                    }
+                );
+                setData(reports);
             })
     }, [drp.region_id, props.show]);
 
     return (
         <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Grow}>
-            <DetailModalToolbar title = {drp.region_name} onClose={props.onClose} />
+            <DetailModalToolbar title={drp.region_name} onClose={props.onClose}/>
             <DialogContent style={{padding: '20px'}}>
-                <Typography variant="h6" style={{marginBottom: 20}}>
-                    Statystyki
-                </Typography>
-                <DetailBody settings={props.settings} data={data}/>
+                <Grid container spacing={3}>
+                    <DetailBody settings={props.settings} data={data}/>
+                </Grid>
             </DialogContent>
         </Dialog>
     );

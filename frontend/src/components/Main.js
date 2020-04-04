@@ -12,6 +12,10 @@ import {useDispatch} from "react-redux";
 import axios from "axios";
 import {API_URL} from "../index";
 import {clearReports, setReports} from "../redux/actions";
+import AreaChart from "recharts/lib/chart/AreaChart";
+import Area from "recharts/lib/cartesian/Area";
+import BarChart from "recharts/lib/chart/BarChart";
+import Bar from "recharts/lib/cartesian/Bar";
 const globalSettings = {
     reportType: 'global',
     reducerKey: 'globalReports',
@@ -24,6 +28,20 @@ const globalSettings = {
                 {component: Line, name: "Zachorowania", dataKey: "total_cases", stroke: "#8884d8"},
                 {component: Line, name: "Zgony", dataKey: "total_deaths", stroke: "#000000"},
                 {component: Line, name: "Wyzdrowienia", dataKey: "total_recoveries", stroke: "#56e336"},
+            ]
+        },
+        {
+            title: "Aktywne",
+            component: AreaChart,
+            series: [
+                {component: Area, name: "Liczba chorych", dataKey: "active_cases", stroke: "#6ec5d8"},
+            ]
+        },
+        {
+            title: "Dzienny przyrost",
+            component: BarChart,
+            series: [
+                {component: Bar, name: "Przyrost zachorowań", dataKey: "total_cases_delta", stroke: "#d89267"},
             ]
         },
     ],
@@ -45,6 +63,13 @@ const localSettings = {
             series: [
                 {component: Line, name: "Zachorowania", dataKey: "total_cases", stroke: "#8884d8"},
                 {component: Line, name: "Zgony", dataKey: "total_deaths", stroke: "#000000"},
+            ],
+        },
+        {
+            title: "Dzienny przyrost",
+            component: BarChart,
+            series: [
+                {component: Bar, name: "Przyrost zachorowań", dataKey: "total_cases_delta", stroke: "#d89267"},
             ]
         },
     ],
@@ -56,7 +81,14 @@ const localSettings = {
 function loadReports(dispatch, type){
     axios.get(API_URL + 'latest_day_reports?report_type=' + type)
         .then((response) => {
-            dispatch(setReports(type, response.data))
+            let reports = response.data;
+            reports = reports.map(
+                report => ({
+                    ...report,
+                    active_cases: report.total_cases - report.total_deaths - report.total_recoveries
+                })
+            );
+            dispatch(setReports(type, reports));
         });
 }
 

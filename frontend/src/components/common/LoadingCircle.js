@@ -17,7 +17,7 @@ export const LoadingCircle = (props) => {
     const reportsLoaded = useSelector(state => state[props.reducerKey].reportsLoaded);
     if (reportsLoaded) return null;
     return (
-        <Grid container xs={12} justify={'center'} className={classes.root} style={{padding: '20px'}}>
+        <Grid container justify={'center'} className={classes.root} style={{padding: '20px'}}>
             <CircularProgress/>
         </Grid>
     )
