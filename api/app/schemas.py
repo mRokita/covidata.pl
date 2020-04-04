@@ -6,7 +6,7 @@ from tables import ReportType
 
 class RegionBase(BaseModel):
     name: str
-    is_poland: bool = False
+    report_type: ReportType
 
 
 class RegionCreate(RegionBase):

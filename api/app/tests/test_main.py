@@ -23,9 +23,9 @@ from httpx import AsyncClient
 TEST_AUTH_TOKEN = '***REMOVED***'
 
 regions_mocked = [
-    {'id': 1, 'name': 'Mazowieckie', 'is_poland': True},
-    {'id': 2, 'name': 'Małopolskie', 'is_poland': True},
-    {'id': 3, 'name': 'Niemcy', 'is_poland': False}
+    {'id': 1, 'name': 'Mazowieckie', 'report_type': ReportType.LOCAL},
+    {'id': 2, 'name': 'Małopolskie', 'report_type': ReportType.LOCAL},
+    {'id': 3, 'name': 'Niemcy', 'report_type': ReportType.GLOBAL}
 ]
 
 regions_mocked = [Region(**r).dict() for r in regions_mocked]
@@ -75,31 +75,35 @@ async def client():
 
 @pytest.mark.asyncio
 async def test_create_region(client, auth_headers):
-    response = await client.post("/api/v1/regions",
-                                 json={'name': 'test', 'is_poland': False})
+    response = await client.post(
+        "/api/v1/regions",
+        json={'name': 'test',
+              'report_type': str(ReportType.GLOBAL.value)})
     assert response.status_code == 401
     assert response.json() == {'detail': 'Not authenticated'}
 
     response = await client.post(
         '/api/v1/regions',
-        json={'name': 'test', 'is_poland': False},
+        json={'name': 'test', 'report_type': str(ReportType.GLOBAL.value)},
         headers=auth_headers
     )
     assert response.status_code == 200
     assert response.json()['id'] == 1
 
+    print([str(ReportType.GLOBAL.value)])
     response = await client.post(
         '/api/v1/regions',
-        json={'name': 'test', 'is_poland': False},
+        json={'name': 'test', 'report_type': str(ReportType.GLOBAL.value)},
         headers=auth_headers
     )
+    print([str(ReportType.GLOBAL.value)])
 
     assert response.status_code == 409, \
         "409 is returned if already created"
 
     response = await client.get('/api/v1/regions')
     assert response.json() == [
-        {'id': 1, 'name': 'test', 'is_poland': False}], \
+        {'id': 1, 'name': 'test', 'report_type': str(ReportType.GLOBAL.value)}], \
         'Records have been successfully inserted'
     assert response.status_code == 200
 
@@ -116,18 +120,20 @@ async def test_read_regions(client):
     assert response.status_code == 200
     assert response.json() == regions_mocked
 
-    response = await client.get('/api/v1/regions?is_poland=False')
+    response = await client.get(f'/api/v1/regions'
+                                f'?report_type={ReportType.GLOBAL.value}')
     assert response.status_code == 200
     assert response.json() == regions_mocked[2:3]
 
-    response = await client.get('/api/v1/regions?is_poland=True')
+    response = await client.get(f'/api/v1/regions'
+                                f'?report_type={ReportType.LOCAL.value}')
     assert response.status_code == 200
     assert response.json() == regions_mocked[:2]
 
 
 @pytest.mark.asyncio
 async def test_update_region(client, auth_headers):
-    to_update = {'name': 'Pomorskie', 'is_poland': False}
+    to_update = {'name': 'Pomorskie', 'report_type': str(ReportType.LOCAL.value)}
     await database.execute_many(regions.insert(), values=regions_mocked)
 
     response = await client.put("/api/v1/regions/1", json=to_update,
@@ -267,7 +273,7 @@ async def test_read_downloaded_reports(client):
     assert res.status_code == 200
     assert res.json() == []
 
-    mock = DownloadedReport(date=today, type=ReportType.LOCAL)
+    mock = DownloadedReport(date=today, type=ReportType.LOCAL.value)
     await insert_downloaded_report(
         mock
     )
@@ -282,7 +288,7 @@ async def test_read_downloaded_reports(client):
 @pytest.mark.asyncio
 async def test_create_downloaded_report(client, auth_headers):
     mock_tomorrow = DownloadedReport(
-        date=today+datetime.timedelta(days=1),
+        date=today + datetime.timedelta(days=1),
         type=ReportType.GLOBAL
     )
 
@@ -306,7 +312,7 @@ async def test_create_downloaded_report(client, auth_headers):
     )
     assert res.status_code == 409
 
-    mock = DownloadedReport(date=today, type=ReportType.LOCAL)
+    mock = DownloadedReport(date=today, type=ReportType.LOCAL.value)
     res = await client.post(
         '/api/v1/downloaded_reports',
         headers=auth_headers,
@@ -332,12 +338,12 @@ async def test_create_downloaded_report(client, auth_headers):
 @pytest.mark.asyncio
 async def test_read_latest_day_reports(client):
     mocked_regions = [
-        Region(id=1, name='Test1'),
-        Region(id=2, name='Test2')
+        Region(id=1, name='Test1', report_type=ReportType.GLOBAL),
+        Region(id=2, name='Test2', report_type=ReportType.GLOBAL)
     ]
     mocked_day_reports = [
         DayReport(region_id=1,
-                  date=today-datetime.timedelta(days=2),
+                  date=today - datetime.timedelta(days=2),
                   total_cases=10),
         DayReport(region_id=1,
                   date=today - datetime.timedelta(days=1),
@@ -355,9 +361,10 @@ async def test_read_latest_day_reports(client):
     await database.execute_many(day_reports.insert(),
                                 [m.dict() for m in mocked_day_reports])
 
-    res = await client.get("/api/v1/latest_day_reports")
+    res = await client.get("/api/v1/latest_day_reports/?report_type=global")
     assert res.status_code == 200
     assert [DayReport(**j)
-            for j in res.json()] == [mocked_day_reports[3], mocked_day_reports[1]]
+            for j in res.json()] == [mocked_day_reports[3],
+                                     mocked_day_reports[1]]
     assert res.json()[0]['region_name'] == 'Test2'
     assert res.json()[1]['region_name'] == 'Test1'

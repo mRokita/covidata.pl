@@ -59,7 +59,7 @@ async def shutdown():
 async def login_for_access_token(
         form_data: OAuth2PasswordRequestForm = Depends()):
     if form_data.username == 'service_user' \
-         and compare_digest(form_data.password, SERVICE_TOKEN):
+            and compare_digest(form_data.password, SERVICE_TOKEN):
         return {
             "access_token": SERVICE_TOKEN,
             "token_type": "bearer"
@@ -96,11 +96,11 @@ async def delete_region(id: int = None,
 
 @app.get("/api/v1/regions", response_model=List[Region])
 async def read_regions(
-        is_poland: bool = Query(None,
-                                description="Filter by is_poland")):
+        report_type: ReportType = Query(None,
+                                        description="Filter by report type")):
     query = regions.select()
-    if is_poland is not None:
-        query = query.where(regions.c.is_poland == is_poland)
+    if report_type is not None:
+        query = query.where(regions.c.report_type == report_type)
     return await database.fetch_all(query)
 
 
@@ -122,11 +122,13 @@ async def create_region(region: RegionCreate,
     db_region_id = await database.execute(
         regions.insert(), values=region.dict()
     )
-    return {**region.dict(), "id": db_region_id}
+    return Region(**region.dict(), id=db_region_id)
 
 
 @app.get("/api/v1/latest_day_reports", response_model=List[LatestDayReport])
-async def read_latest_day_reports():
+async def read_latest_day_reports(
+        report_type: ReportType = Query(...,
+                                        description="Filter by report type")):
     max_date_func = func.max(day_reports.c.date).label('date')
     mdr = select(
         [day_reports.c.region_id, max_date_func]
@@ -142,7 +144,9 @@ async def read_latest_day_reports():
         and_(
             day_reports.c.date == mdr.c.date,
             day_reports.c.region_id == mdr.c.region_id,
-            regions.c.id == day_reports.c.region_id)
+            regions.c.id == day_reports.c.region_id,
+            regions.c.report_type == report_type
+        )
     ).order_by(-day_reports.c.total_cases)
     ret = await database.fetch_all(query)
     return ret

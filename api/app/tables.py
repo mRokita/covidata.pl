@@ -13,11 +13,17 @@ from sqlalchemy import Table, MetaData, Enum
 
 metadata = MetaData()
 
+
+class ReportType(str, enum.Enum):
+    GLOBAL = 'global'
+    LOCAL = 'local'
+
+
 regions = Table(
     'regions',
     metadata,
     Column('id', Integer, primary_key=True, index=True, nullable=False),
-    Column('is_poland', Boolean, nullable=False),
+    Column('report_type', Enum(ReportType), nullable=False),
     Column('name', String, unique=True, index=True, nullable=False)
 )
 
@@ -41,11 +47,6 @@ users = Table(
     Column('username', String, unique=True, index=True),
     Column('hashed_password', String),
 )
-
-
-class ReportType(enum.Enum):
-    GLOBAL = 'global'
-    LOCAL = 'local'
 
 
 downloaded_reports = Table(
