@@ -1,7 +1,7 @@
 import datetime
 import gettext
 from io import StringIO
-from typing import NamedTuple, Iterator, Set
+from typing import NamedTuple, Iterator, Set, List
 
 import httpx
 import pandas
@@ -40,40 +40,50 @@ class GlobalCrawler(Crawler):
     report_type = ReportType.GLOBAL
     reports_since = datetime.datetime(year=2020, month=1, day=22)
 
-    def get_global_cov_data(self) -> Iterator[NamedTuple]:
-        with httpx.Client() as client:
-            url = cssegi_url(self.date)
-            data = client.get(url)
-            if data.status_code == 404:
-                raise self.DataNotAvailable
-            if data.status_code != 200:
-                raise HTTPError(
-                    f'date: {self.date}, code: {data.status_code}')
+    @classmethod
+    def get_missing_record_dates(cls) -> List[datetime.datetime]:
+        return super().get_missing_record_dates()
 
-            df = pandas.read_csv(StringIO(data.text))
-            df = df.rename(columns={
-                'Country/Region': 'Country_Region'
-            })
-            df = df[['Country_Region', 'Deaths', 'Recovered', 'Confirmed']]
-            df['Country_Region'] = df['Country_Region'].str.replace(r"\(.*\)",
-                                                                    "")
+    def get_global_cov_data(self) -> Iterator[NamedTuple]:
+        url = cssegi_url(self.date)
+        with httpx.Client() as client:
+            data = client.get(url)
+        if data.status_code == 404:
+            raise self.DataNotAvailable
+        if data.status_code != 200:
+            raise HTTPError(
+                f'date: {self.date}, code: {data.status_code}')
+
+        df = pandas.read_csv(StringIO(data.text))
+        df = df.rename(columns={
+            'Country/Region': 'Country_Region'
+        })
+        df = df[['Country_Region', 'Deaths', 'Recovered', 'Confirmed']]
+        df['Country_Region'] = df['Country_Region'].str.replace(r"\(.*\)",
+                                                                "")
+        df['Country_Region'] = df['Country_Region'].apply(
+            self.translate_country_name)
         return df.groupby(['Country_Region']).sum().itertuples()
+
+    def translate_country_name(self, name):
+        if name in SKIPPED_GLOBAL_COUNTRIES:
+            return "__removed__"
+        name = get_polish_name(name)
+        return name
 
     def fetch(self):
         global_cov_data = self.get_global_cov_data()
         for (country_name, total_deaths, total_recoveries, total_cases) \
                 in global_cov_data:
-            if country_name in SKIPPED_GLOBAL_COUNTRIES:
+            if country_name == '__removed__':
                 continue
-            country_name = get_polish_name(country_name)
             region_id = self.get_region_id(country_name)
             self.submit_day_report(
-                self.date,
                 region_id=region_id,
                 cases=total_cases,
                 deaths=total_deaths,
                 recoveries=total_recoveries
             )
-        self.submit_download_success(self.date, GLOBAL)
+        self.submit_download_success()
 
 
