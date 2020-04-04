@@ -13,8 +13,8 @@ import {Alert} from "@material-ui/lab"
 import Typography from "@material-ui/core/Typography";
 
 
-const LatestChartsAlert = () => {
-    const reportsLoaded = useSelector(state => state.globalReports.reportsLoaded);
+const LatestChartsAlert = (props) => {
+    const reportsLoaded = useSelector(state => state[props.reducerKey].reportsLoaded);
     if (!reportsLoaded) return null;
     return (
         <Alert severity="info" color="info" style={{marginTop: 20}}>
@@ -45,7 +45,7 @@ export const Latest = (props) => {
     return (
         <React.Fragment>
             <LatestFilterBox reducerKey={settings.reducerKey} reportType={settings.reportType}/>
-            <LatestChartsAlert/>
+            <LatestChartsAlert reducerKey={settings.reducerKey}/>
             <TableContainer component={Paper} style={{marginTop: '20px'}}>
                 <Table style={{maxWidth: '100%', maxHeight: '100vh'}} stickyHeader>
                     <LatestTableHead columns={settings.columns} regionLabel={settings.regionLabel}/>
