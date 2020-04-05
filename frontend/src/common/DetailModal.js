@@ -12,7 +12,10 @@ const DetailBody = (props) => {
     const [data, setData] = useState([]);
     useEffect(() => {
         const drp = props.regionDayReport;
-        if(!props.show) return;
+        if(!props.show){
+            setData([]);
+            return;
+        }
         axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
             .then((response) => {
                 let reports = response.data;
@@ -30,6 +33,7 @@ const DetailBody = (props) => {
                 setData(reports);
             })
     }, [props.show, props.regionDayReport]);
+    if(!props.show) return null;
     return props.settings.map(p =>
         <Grid item xs={12} md={6} key={p.title}>
             <CardChart component={p.component} title={p.title} data={data}>

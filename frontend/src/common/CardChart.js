@@ -57,7 +57,7 @@ export const CardChart = (props) => {
                   alignItems="center"
                   justify="center"
                   style={{padding: 20, width: '100%'}}>
-                {   props.children.length > 1 ?
+                {   props.children.length >
                     props.children.map(c =>
                         <Grid item xs={12} key={c.props.dataKey}>
                             <FormControlLabel
@@ -71,7 +71,7 @@ export const CardChart = (props) => {
                                 label={c.props.name}
                             />
                         </Grid>
-                    ) : null
+                    )
                 }
             </Grid>
         </Box>
