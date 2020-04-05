@@ -13,7 +13,6 @@ services:
       replicas: 2
       update_config:
         delay: 10s
-        parallelism: 1
         failure_action: rollback
     networks:
       - default
@@ -31,11 +30,15 @@ services:
       replicas: 2
       update_config:
         delay: 10s
-        parallelism: 1
         failure_action: rollback
     networks:
       - default
       - traefik
+  redis:
+    image: redis:6.0-rc3-alpine3.11
+    restart: always
+    networks:
+      - default
   db:
     image: postgres:12.2-alpine
     restart: always

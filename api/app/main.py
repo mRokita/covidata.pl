@@ -1,6 +1,8 @@
 import datetime
 from typing import List
 
+from aiocache import multi_cached, Cache, cached, caches
+from aiocache.serializers import PickleSerializer, JsonSerializer
 from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
 
@@ -19,7 +21,7 @@ from queries import filter_by_day_report, get_day_report, day_report_exists, \
     downloaded_report_exists
 from schemas import DayReport, Region, RegionCreate, HTTP409, \
     DayReportCreate, DownloadedReport, LatestDayReport
-from settings import SERVICE_TOKEN
+from settings import SERVICE_TOKEN, CACHE_ALIAS, CACHE_CONFIG
 from secrets import compare_digest
 from tables import regions, day_reports, ReportType
 
@@ -27,6 +29,8 @@ app = FastAPI()
 
 app.add_middleware(ProxyHeadersMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+caches.set_config(CACHE_CONFIG)
 
 origins = [
     "http://covidata.localhost",
@@ -47,6 +51,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    await caches.get(CACHE_ALIAS).clear()
     await database.connect()
 
 
@@ -95,13 +100,15 @@ async def delete_region(id: int = None,
 
 
 @app.get("/api/v1/regions", response_model=List[Region])
+@cached(alias=CACHE_ALIAS, ttl=10)
 async def read_regions(
         report_type: ReportType = Query(None,
                                         description="Filter by report type")):
     query = regions.select()
     if report_type is not None:
         query = query.where(regions.c.report_type == report_type)
-    return await database.fetch_all(query)
+    ret = await database.fetch_all(query)
+    return [Region(**r).dict() for r in ret]
 
 
 @app.post("/api/v1/regions", response_model=Region,
@@ -126,6 +133,7 @@ async def create_region(region: RegionCreate,
 
 
 @app.get("/api/v1/latest_day_reports", response_model=List[LatestDayReport])
+@cached(alias=CACHE_ALIAS, ttl=10)
 async def read_latest_day_reports(
         report_type: ReportType = Query(...,
                                         description="Filter by report type")):
@@ -149,7 +157,7 @@ async def read_latest_day_reports(
         )
     ).order_by(-day_reports.c.total_cases)
     ret = await database.fetch_all(query)
-    return ret
+    return [LatestDayReport(**r).dict() for r in ret]
 
 
 @app.put("/api/v1/regions/{id}", response_model=Region)
@@ -169,15 +177,18 @@ async def update_region(
 
 @app.get("/api/v1/regions/{region_id}/day_reports",
          response_model=List[DayReport])
+@cached(alias=CACHE_ALIAS, ttl=10)
 async def read_day_reports(region_id: int):
-    return await database.fetch_all(
+    ret = await database.fetch_all(
         day_reports.select().where(
             day_reports.c.region_id == region_id
         ).order_by(day_reports.c.date))
+    return [DayReport(**r).dict() for r in ret]
 
 
 @app.get("/api/v1/regions/{region_id}/day_reports/{date}",
          response_model=DayReport)
+@cached(alias=CACHE_ALIAS, ttl=10)
 async def read_day_report(region_id: int,
                           date: datetime.date):
     data = await get_day_report(region_id, date)

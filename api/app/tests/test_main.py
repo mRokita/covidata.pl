@@ -1,5 +1,7 @@
 import os
+from asyncio import sleep
 
+from aiocache import caches, SimpleMemoryCache
 from starlette.config import environ
 
 # Switch database to sqlite before DATABASE_URL gets loaded
@@ -13,7 +15,7 @@ from auth import authenticate_user, get_password_hash
 from schemas import DayReport, UserCreate, Region, DownloadedReport
 from database import database
 from tables import regions, day_reports, users, ReportType
-from settings import DATABASE_URL
+from settings import DATABASE_URL, CACHE_ALIAS
 from main import app
 from alembic.config import Config as AlembicConfig
 from alembic.command import upgrade as alembic_upgrade
@@ -48,6 +50,14 @@ day_reports_mocked = [DayReport(**dr).dict() for dr in day_reports_mocked]
 
 if os.path.exists('/tmp/test.db'):
     os.remove('/tmp/test.db')
+
+
+@pytest.fixture(autouse=True)
+def memory_cache(event_loop):
+    cache = caches.get('testing')
+    yield
+    event_loop.run_until_complete(cache.clear())
+    event_loop.run_until_complete(cache.close())
 
 
 @pytest.fixture()
@@ -90,13 +100,11 @@ async def test_create_region(client, auth_headers):
     assert response.status_code == 200
     assert response.json()['id'] == 1
 
-    print([str(ReportType.GLOBAL.value)])
     response = await client.post(
         '/api/v1/regions',
         json={'name': 'test', 'report_type': str(ReportType.GLOBAL.value)},
         headers=auth_headers
     )
-    print([str(ReportType.GLOBAL.value)])
 
     assert response.status_code == 409, \
         "409 is returned if already created"
@@ -111,10 +119,18 @@ async def test_create_region(client, auth_headers):
 @pytest.mark.asyncio
 async def test_read_regions(client):
     response = await client.get("/api/v1/regions")
+    assert len(response.json()) == 0
+    assert response.status_code == 200
+
+    await sleep(11)  # wait for cache to invalidate
+
+    response = await client.get("/api/v1/regions")
     assert response.json() == []
     assert response.status_code == 200
 
     await database.execute_many(regions.insert(), values=regions_mocked)
+
+    await sleep(11)  # wait for cache to invalidate
 
     response = await client.get('/api/v1/regions')
     assert response.status_code == 200
