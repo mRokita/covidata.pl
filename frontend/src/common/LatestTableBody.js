@@ -1,18 +1,23 @@
 import {useSelector} from "react-redux";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import {DetailModal} from "./DetailModal";
 import TableBody from "@material-ui/core/TableBody";
-import LazyLoad, {forceCheck} from 'react-lazyload';
+import LazyLoad, {forceCheck, forceVisible} from 'react-lazyload';
 
 
 const MainTableRow = (props) => {
     const [selected, setSelected] = useState(false);
     const clickHandler = () => setSelected(true);
     const columns = props.settings.columns;
+    const searchText = useSelector(state => (state[props.reducerKey].searchText));
+    useEffect(() => {
+        if (searchText && props.regionDayReport.region_name.includes(searchText.toLowerCase()))
+            forceCheck();
+    }, [searchText])
     return (
-        <LazyLoad height={50} unmountIfInvisible={true}>
+        <LazyLoad height={30} unmountIfInvisible={true}>
             <TableRow key={props.regionDayReport.region_id} onClick={clickHandler} style={{cursor: 'pointer'}}>
                 <TableCell style={{maxWidth: '30vw'}}>{props.regionDayReport.region_name}</TableCell>
                 {
@@ -32,15 +37,13 @@ const MainTableRow = (props) => {
 export const LatestTableBody = (props) => {
     const searchText = useSelector(state => (state[props.reducerKey].searchText));
     const reports = useSelector(state => (state[props.reducerKey].reports));
-    if (searchText.length)
-        forceCheck();
     return <TableBody>
         {
             reports.map(
                 (value) =>
                     (
                         value.region_name.toLowerCase().includes(searchText.toLowerCase()) ?
-                            <MainTableRow regionDayReport={value} key={value.region_id} settings={props.settings}/>
+                            <MainTableRow reducerKey={props.reducerKey} regionDayReport={value} key={value.region_id} settings={props.settings}/>
                             :
                             null
                     )

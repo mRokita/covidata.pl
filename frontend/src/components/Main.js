@@ -15,7 +15,7 @@ import AreaChart from "recharts/lib/chart/AreaChart";
 import Area from "recharts/lib/cartesian/Area";
 import BarChart from "recharts/lib/chart/BarChart";
 import Bar from "recharts/lib/cartesian/Bar";
-import { Emojione, Twemoji, Emoji } from 'react-emoji-render';
+import { Emojione, Twemoji } from 'react-emoji-render';
 const globalSettings = {
     reportType: 'global',
     reducerKey: 'globalReports',
