@@ -15,6 +15,7 @@ import AreaChart from "recharts/lib/chart/AreaChart";
 import Area from "recharts/lib/cartesian/Area";
 import BarChart from "recharts/lib/chart/BarChart";
 import Bar from "recharts/lib/cartesian/Bar";
+import { Emojione, Twemoji, Emoji } from 'react-emoji-render';
 const globalSettings = {
     reportType: 'global',
     reducerKey: 'globalReports',
@@ -114,10 +115,10 @@ export default function Main() {
                     value={selectedReportType}>
                     <BottomNavigationAction label="Polska"
                                             value={"local"}
-                                            icon={<span style={{height: 30, fontSize: '25px', fontFamily: 'Roboto'}}>🇵🇱</span>}/>
+                                            icon={<Emojione style={{height: 30, fontSize: '26px'}} text="🇵🇱"/>}/>
                     <BottomNavigationAction label="Świat"
                                             value={"global"}
-                                            icon={<span style={{height: 30, fontSize: '25px', fontFamily: 'Roboto'}}>🌍</span>}/>
+                                            icon={<Twemoji style={{height: 30, fontSize: '25px'}} text={"🌍"}/>}/>
                 </BottomNavigation>
             </Box>
         </React.Fragment>
