@@ -4,6 +4,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import {DetailModal} from "./DetailModal";
 import TableBody from "@material-ui/core/TableBody";
+import LazyLoad from 'react-lazyload';
 
 
 const MainTableRow = (props) => {
@@ -11,7 +12,7 @@ const MainTableRow = (props) => {
     const clickHandler = () => setSelected(true);
     const columns = props.settings.columns;
     return (
-        <React.Fragment>
+        <LazyLoad height={50} unmountIfInvisible={true}>
             <TableRow key={props.regionDayReport.region_id} onClick={clickHandler} style={{cursor: 'pointer'}}>
                 <TableCell style={{maxWidth: '30vw'}}>{props.regionDayReport.region_name}</TableCell>
                 {
@@ -23,7 +24,7 @@ const MainTableRow = (props) => {
             <DetailModal onClose={() => setSelected(false)} show={selected}
                          settings={props.settings.detail}
                          regionDayReport={props.regionDayReport}/>
-        </React.Fragment>
+        </LazyLoad>
     )
 };
 
