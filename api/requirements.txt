@@ -34,10 +34,8 @@ Mako==1.1.2
 MarkupSafe==1.1.1
 more-itertools==8.2.0
 msgpack==1.0.0
-numpy==1.18.2
 outcome==1.0.1
 packaging==20.3
-pandas==1.0.3
 parso==0.6.2
 passlib==1.7.2
 pbr==5.4.4
