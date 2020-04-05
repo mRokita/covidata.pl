@@ -1,14 +1,15 @@
 import datetime
 from collections import Counter
 from datetime import datetime
+from datetime import timedelta
 from json import loads
 import re
 from typing import List
 
-from httpx import Client
+import httpx
 from loguru import logger
 
-from common import Crawler, ReportType
+from common import Crawler, ReportType, date_str, Client
 from config import WAYBACK_SNAPSHOT_LIST_URL, PL_GOV_URL
 
 
@@ -41,11 +42,39 @@ class LocalCrawler(Crawler):
             regions[name] = regions.get(name, Counter()) + row_counter
         for name, counter in regions.items():
             region_id = self.get_region_id(name)
-            self.submit_day_report(region_id=region_id,
-                                   cases=counter['total_cases'],
-                                   deaths=counter['total_deaths'])
+            report_data = {
+                'region_id': region_id,
+                'cases': counter['total_cases'],
+                'deaths': counter['total_deaths']
+            }
+            self.apply_recoveries(report_data)
+            self.submit_day_report(**report_data)
 
         self.submit_download_success()
+
+    def apply_recoveries(self, report_data):
+        """
+        The official website providing data for poland doesn't store
+         recoveries.
+        Because of that, we should fill the new records with previous records.
+        """
+        region_id = report_data['region_id']
+        with Client() as c:
+            res = c.get(f"regions/{region_id}/day_reports/{date_str(self.date)}")
+        if res.status_code != 200:
+            return
+        recoveries = res.json().get('total_recoveries', 0)
+        if recoveries:
+            return
+        with Client() as c:
+            res = c.get(
+                f"regions/{region_id}"
+                f"/day_reports"
+                f"/{date_str(self.date - timedelta(days=1))}")
+        if res.status_code != 200:
+            return
+        recoveries = res.json().get('total_recoveries', 0)
+        report_data['recoveries'] = recoveries
 
     def submit_region(self, name: str) -> int:
         if name != 'Polska':
@@ -69,7 +98,7 @@ class LocalCrawler(Crawler):
         if self.date.date() == datetime.today().date():
             return PL_GOV_URL
 
-        with Client() as c:
+        with httpx.Client() as c:
             res = c.get(WAYBACK_SNAPSHOT_LIST_URL)
 
         snap_timestamps = map(  # That's just to parse stupid wayback's format
@@ -93,7 +122,7 @@ class LocalCrawler(Crawler):
         """
         url = self.get_download_url()
         tag = None
-        with Client() as c:
+        with httpx.Client() as c:
             res = c.get(url)
             for line in res.iter_lines():
                 if 'id="registerData"' in line:

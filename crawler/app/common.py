@@ -80,7 +80,11 @@ class Crawler:
                     'type': self.report_type.value
                 }
             )
-        if not res.status_code == 200:
+        if res.status_code == 409:
+            logger.warning(f"Record for {date_str(self.date)} has been "
+                           f"submitted already. Update successful.")
+            return
+        elif not res.status_code == 200:
             logger.error(res.text)
             logger.error("Couldn't submit the report for " + date_str(self.date))
         else:
@@ -139,8 +143,8 @@ class Crawler:
                 f'regions/{region_id}/day_reports/',
                 json=data
             )
-            if res.status_code not in (200, 201):
-                raise HTTPError(res.status_code)
+        if res.status_code not in (200, 201):
+            raise HTTPError(res.status_code)
 
 
 def date_set(
