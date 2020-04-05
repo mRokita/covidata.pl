@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {API_URL} from "../index";
 import Dialog from "@material-ui/core/Dialog";
 import Grow from "@material-ui/core/Grow";
-import Typography from "@material-ui/core/Typography";
 import DialogContent from "@material-ui/core/DialogContent";
 import axios from "axios";
 import {DetailModalToolbar} from "./DetailModalToolbar";
@@ -26,9 +25,9 @@ const DetailBody = (props) => {
 
 export const DetailModal = (props) => {
     const [data, setData] = useState([]);
-    const drp = props.regionDayReport;
+    const closeHandler = useCallback(() => {setData([]); props.onClose()}, [props.regionDayReport.region_id]);
     useEffect(() => {
-        setData([]);
+        const drp = props.regionDayReport;
         if (!props.show) return;
         axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
             .then((response) => {
@@ -46,14 +45,15 @@ export const DetailModal = (props) => {
                 );
                 setData(reports);
             })
-    }, [drp.region_id, props.show]);
+    }, [props.regionDayReport, props.show]);
 
+    const drp = props.regionDayReport;
     return (
-        <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Grow}>
-            <DetailModalToolbar title={drp.region_name} onClose={props.onClose}/>
+        <Dialog open={props.show} fullScreen onClose={closeHandler} TransitionComponent={Grow}>
+            <DetailModalToolbar title={drp.region_name} onClose={closeHandler}/>
             <DialogContent style={{padding: '20px'}}>
                 <Grid container spacing={3}>
-                    <DetailBody settings={props.settings} data={data}/>
+                    {props.show ? <DetailBody settings={props.settings} data={data}/>: null}
                 </Grid>
             </DialogContent>
         </Dialog>

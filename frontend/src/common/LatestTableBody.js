@@ -1,10 +1,7 @@
-import {useDispatch, useSelector} from "react-redux";
-import React, {useEffect, useState} from "react";
-import {API_URL} from "../index";
-import {setReports} from "../redux/actions";
+import {useSelector} from "react-redux";
+import React, {useState} from "react";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
-import axios from "axios";
 import {DetailModal} from "./DetailModal";
 import TableBody from "@material-ui/core/TableBody";
 
@@ -15,7 +12,7 @@ const MainTableRow = (props) => {
     const columns = props.settings.columns;
     return (
         <React.Fragment>
-            <TableRow key={drp.region_id} onClick={() => setSelected(true)} style={{cursor: 'pointer'}}>
+            <TableRow key={drp.region_id} onClick={() => !selected ? setSelected(true) : null} style={{cursor: 'pointer'}}>
                 <TableCell style={{maxWidth: '30vw'}}>{drp.region_name}</TableCell>
                 {
                     columns.map(c =>
@@ -32,8 +29,6 @@ const MainTableRow = (props) => {
 export const LatestTableBody = (props) => {
     const searchText = useSelector(state => (state[props.reducerKey].searchText));
     const reports = useSelector(state => (state[props.reducerKey].reports));
-
-
 
     return <TableBody>
         {
