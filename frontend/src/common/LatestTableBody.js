@@ -4,7 +4,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import {DetailModal} from "./DetailModal";
 import TableBody from "@material-ui/core/TableBody";
-import LazyLoad from 'react-lazyload';
+import LazyLoad, {forceCheck} from 'react-lazyload';
 
 
 const MainTableRow = (props) => {
@@ -32,6 +32,8 @@ const MainTableRow = (props) => {
 export const LatestTableBody = (props) => {
     const searchText = useSelector(state => (state[props.reducerKey].searchText));
     const reports = useSelector(state => (state[props.reducerKey].reports));
+    if (searchText.length)
+        forceCheck();
     return <TableBody>
         {
             reports.map(

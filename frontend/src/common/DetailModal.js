@@ -44,7 +44,8 @@ const DetailBody = (props) => {
                                      stroke={s.stroke}/>
                     )
                 }
-            </CardChart></Grid>
+            </CardChart>
+        </Grid>
     )
 };
 
