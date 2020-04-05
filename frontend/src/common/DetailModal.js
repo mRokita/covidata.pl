@@ -7,6 +7,7 @@ import {DetailModalToolbar} from "./DetailModalToolbar";
 import {CardChart} from "./CardChart";
 import Grid from "@material-ui/core/Grid";
 import {Zoom} from "@material-ui/core";
+import Slide from "@material-ui/core/Slide";
 
 const DetailBody = (props) => {
     const [data, setData] = useState([]);
@@ -49,10 +50,14 @@ const DetailBody = (props) => {
     )
 };
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
 export const DetailModal = (props) => {
     const drp = props.regionDayReport;
     return (
-        <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Zoom}>
+        <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Transition}>
             <DetailModalToolbar title={drp.region_name} onClose={props.onClose}/>
             <DialogContent style={{padding: '20px'}}>
                 <Grid container spacing={3}>

@@ -13,6 +13,9 @@
   }
 }
 
+.MuiBottomNavigationAction-root.Mui-selected {
+  color: #2196f3 !important;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

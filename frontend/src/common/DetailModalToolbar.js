@@ -5,13 +5,16 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import purple from "@material-ui/core/colors/purple";
+import blue from "@material-ui/core/colors/blue";
 
 
 const useStyles = makeStyles(theme => ({
     detailToolbar: {
-        background: purple[800],
-        color: 'white'
+        background: '#ffffff',
+        color: blue[500]
+    },
+    closeIcon: {
+        fill: blue[500],
     },
     title: {
         flexGrow: 1,
@@ -33,7 +36,7 @@ export const DetailModalToolbar = (props) => {
                     {props.title}
                 </Typography>
                 <IconButton edge="end" color="inherit" onClick={props.onClose} aria-label="close">
-                    <CloseIcon/>
+                    <CloseIcon className={classes.closeIcon}/>
                 </IconButton>
             </Toolbar>
         </AppBar>
