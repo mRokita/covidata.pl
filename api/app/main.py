@@ -38,6 +38,7 @@ origins = [
     "https://coronadata.pl",
     "http://localhost",
     "http://localhost:3000",
+    "http://192.168.1.14:3000"
 ]
 
 app.add_middleware(
@@ -109,6 +110,16 @@ async def read_regions(
         query = query.where(regions.c.report_type == report_type)
     ret = await database.fetch_all(query)
     return [Region(**r).dict() for r in ret]
+
+
+@app.get("/api/v1/regions/{id}")
+@cached(alias=CACHE_ALIAS, ttl=10)
+async def read_region(id: int):
+    query = regions.select(regions.c.id == id)
+    db_region = await database.fetch_one(query)
+    if not db_region:
+        raise HTTPException(status_code=404)
+    return Region(**db_region).dict()
 
 
 @app.post("/api/v1/regions", response_model=Region,

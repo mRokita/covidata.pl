@@ -7,7 +7,7 @@ import {Provider} from "react-redux";
 import store from "./redux/store";
 
 const HOST = window.location.hostname;
-let api_url = 'http://localhost:8000/api/v1/';
+let api_url = 'http://192.168.1.14:8000/api/v1/';
 if (HOST === 'covidata.localhost') {
     api_url = 'http://covidata.localhost/api/v1/';
 } else if (HOST === 'covidata.pl') {

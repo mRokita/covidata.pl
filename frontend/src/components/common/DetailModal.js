@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {API_URL} from "../index";
+import {API_URL} from "../../index";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import axios from "axios";
@@ -8,16 +8,15 @@ import {CardChart} from "./CardChart";
 import Grid from "@material-ui/core/Grid";
 import {Zoom} from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
+import {Redirect, Switch, useLocation, useHistory, matchPath, useParams, Route} from "react-router-dom";
+import {statsSettings} from "../Stats";
 
-const DetailBody = (props) => {
+
+function DetailBody({reportType, regionId}){
     const [data, setData] = useState([]);
+    const settings = statsSettings[reportType];
     useEffect(() => {
-        const drp = props.regionDayReport;
-        if(!props.show){
-            setData([]);
-            return;
-        }
-        axios.get(API_URL + 'regions/' + drp.region_id + '/day_reports')
+        axios.get(`${API_URL}regions/${regionId}/day_reports`)
             .then((response) => {
                 let reports = response.data;
                 let prev_report = {total_cases: 0};
@@ -33,9 +32,8 @@ const DetailBody = (props) => {
                 );
                 setData(reports);
             })
-    }, [props.show, props.regionDayReport]);
-    if(!props.show) return null;
-    return props.settings.map(p =>
+    }, [regionId]);
+    return settings.detail.map(p =>
         <Grid item xs={12} md={6} key={p.title}>
             <CardChart component={p.component} title={p.title} data={data}>
                 {
@@ -48,22 +46,26 @@ const DetailBody = (props) => {
             </CardChart>
         </Grid>
     )
-};
+}
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const DetailModal = (props) => {
-    const drp = props.regionDayReport;
+export function DetailModal(){
+    const {reportType, regionName, regionId} = useParams();
+    const [open, setOpen] = useState(true);
+    const history = useHistory();
+    const closeHandler = () => setOpen(false);
+    const exitedHandler = () => history.push(`/stats/${reportType}`);
     return (
-        <Dialog open={props.show} fullScreen onClose={props.onClose} TransitionComponent={Transition}>
-            <DetailModalToolbar title={drp.region_name} onClose={props.onClose}/>
-            <DialogContent style={{padding: '20px'}}>
+        <Dialog open={open} fullScreen onClose={closeHandler} onExited={exitedHandler} TransitionComponent={Transition}>
+            <DetailModalToolbar regionId={regionId} reportType={reportType} regionName={regionName} onClose={closeHandler}/>
+            <DialogContent style={{padding: '20px'}} onClose={closeHandler}>
                 <Grid container spacing={3}>
-                    <DetailBody settings={props.settings} regionDayReport={drp} show={props.show}/>
+                    <DetailBody reportType={reportType} regionId={regionId}/>
                 </Grid>
             </DialogContent>
         </Dialog>
     );
-};
+}
