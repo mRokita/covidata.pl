@@ -40,7 +40,7 @@ export function LatestTableBody (props){
                 (value) =>
                     (
                         value.region_name.toLowerCase().includes(searchText.toLowerCase()) ?
-                            <LazyLoad height={50} offset={100} unmountIfInvisible>
+                            <LazyLoad height={50} once>
                             <MainTableRow reducerKey={props.reducerKey} regionDayReport={value} key={value.region_id} settings={props.settings}/>
                             </LazyLoad>
                             :
