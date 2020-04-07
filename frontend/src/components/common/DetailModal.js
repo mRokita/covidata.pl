@@ -57,7 +57,7 @@ export function DetailModal(){
     const [open, setOpen] = useState(true);
     const history = useHistory();
     const closeHandler = () => setOpen(false);
-    const exitedHandler = () => history.push(`/stats/${reportType}`);
+    const exitedHandler = () => history.replace(`/stats/${reportType}`);
     return (
         <Dialog open={open} fullScreen onClose={closeHandler} onExited={exitedHandler} TransitionComponent={Transition}>
             <DetailModalToolbar regionId={regionId} reportType={reportType} regionName={regionName} onClose={closeHandler}/>
