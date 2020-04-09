@@ -38,7 +38,8 @@ origins = [
     "https://coronadata.pl",
     "http://localhost",
     "http://localhost:3000",
-    "http://192.168.1.14:3000"
+    "http://192.168.1.14:3000",
+    "http://192.168.42.247:3000"
 ]
 
 app.add_middleware(

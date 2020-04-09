@@ -32,7 +32,7 @@ const MainTableRow = React.memo(function MainTableRow(props) {
 
 export function LatestTableBody (props){
     const searchText = useSelector(state => (state[props.reducerKey].searchText));
-    const reports = useSelector(state => (state[props.reducerKey].reports))
+    const reports = useSelector(state => (state[props.reducerKey].reports));
     useEffect(() => forceCheck());
     return <TableBody>
         {

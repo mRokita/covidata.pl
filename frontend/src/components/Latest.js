@@ -17,6 +17,7 @@ import {clearReports, setReports} from "../redux/actions";
 import {Redirect, useLocation, useHistory, Route, useParams} from "react-router-dom";
 import {statsSettings} from "./Stats";
 import {DetailModal} from "./common/DetailModal";
+import LatestTable from "./LatestTable";
 
 
 const LatestChartsAlert = (props) => {
@@ -55,12 +56,15 @@ export const Latest = React.memo(function Latest({reportType}){
         <React.Fragment>
             <LatestFilterBox reducerKey={settings.reducerKey} reportType={settings.reportType}/>
             <LatestChartsAlert reducerKey={settings.reducerKey}/>
-            <TableContainer component={Paper} style={{marginTop: '20px'}}>
-                <Table style={{maxWidth: '100%'}} stickyHeader>
-                    <LatestTableHead columns={settings.columns} regionLabel={settings.regionLabel}/>
-                    <LatestTableBody settings={settings} reducerKey={settings.reducerKey}/>
-                </Table>
-            </TableContainer>
+            <Paper style={{marginTop: 20}}>
+            <LatestTable settings={settings} />
+            </Paper>
+            {/*<TableContainer component={Paper} style={{marginTop: '20px'}}>*/}
+            {/*    <Table style={{maxWidth: '100%'}} stickyHeader>*/}
+            {/*        <LatestTableHead columns={settings.columns} regionLabel={settings.regionLabel}/>*/}
+            {/*        <LatestTableBody settings={settings} reducerKey={settings.reducerKey}/>*/}
+            {/*    </Table>*/}
+            {/*</TableContainer>*/}
             <LoadingCircle reducerKey={settings.reducerKey}/>
 
         </React.Fragment>
