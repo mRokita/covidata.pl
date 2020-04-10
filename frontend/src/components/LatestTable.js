@@ -63,6 +63,7 @@ export default function LatestTable({settings}) {
                                     cursor: 'initial',
                                     backgroundColor: '#fafafa'
                                 }}
+                                noRowsRenderer={() => <Typography align={"center"} style={{padding: 10}}>Brak wyników</Typography>}
                                 autoHeight
                                 ref={table}
                                 onRowClick={clickHandler}
