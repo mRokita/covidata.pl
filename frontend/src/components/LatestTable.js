@@ -1,7 +1,7 @@
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import Table from "react-virtualized/dist/commonjs/Table";
 import {Column} from "react-virtualized"
-import React, {useRef} from "react";
+import React, {useMemo, useRef} from "react";
 import {useSelector} from "react-redux";
 import TableCell from "@material-ui/core/TableCell";
 import WindowScroller from "react-virtualized/dist/commonjs/WindowScroller";
@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import {useWindowWidth} from "@react-hook/window-size";
 import {useRouteMatch} from "react-router-dom";
 const cellRenderer = ({cellData, columnIndex, style}) => {
-    console.log(style)
     return (
         <TableCell
             align="left"
@@ -42,6 +41,9 @@ export default function LatestTable({settings}) {
     const history = useHistory();
     const table = useRef(null);
     const windowWidth = useWindowWidth();
+    const filteredReports = useMemo(() => reports.filter(
+        ({region_name}) => region_name.toLowerCase().includes(searchText.toLowerCase())
+    ), [reports, searchText]);
     const clickHandler = ({rowData}) => history.push(`${url}/${rowData.region_name}/${rowData.region_id}`);
 
     return <WindowScroller>
@@ -64,13 +66,15 @@ export default function LatestTable({settings}) {
                                 autoHeight
                                 ref={table}
                                 onRowClick={clickHandler}
-                                rowHeight={52}
+                                rowHeight={50}
                                 isScrolling={isScrolling}
                                 onScroll={onChildScroll}
                                 scrollTop={scrollTop}
-                                rowCount={reports.length}
-                                rowGetter={({index}) => reports[index]}
-                                headerHeight={52}
+                                estimatedRowSize={50}
+                                overscanRowCount={5}
+                                rowCount={filteredReports.length}
+                                rowGetter={({index}) => filteredReports[index]}
+                                headerHeight={50}
                                 width={width}
                                 height={height}>
                                 <Column

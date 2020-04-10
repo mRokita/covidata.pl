@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {API_URL} from "../../index";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -6,9 +6,8 @@ import axios from "axios";
 import {DetailModalToolbar} from "./DetailModalToolbar";
 import {CardChart} from "./CardChart";
 import Grid from "@material-ui/core/Grid";
-import {Zoom} from "@material-ui/core";
 import Slide from "@material-ui/core/Slide";
-import {Redirect, Switch, useLocation, useHistory, matchPath, useParams, Route} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import {statsSettings} from "../Stats";
 
 

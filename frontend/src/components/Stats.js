@@ -109,7 +109,6 @@ export default function Stats({match}) {
     const history = useHistory();
     const { reportType } = useParams();
     const { path, url } = useRouteMatch();
-    console.log(path, url);
     useEffect(() => {
         loadReports(dispatch, reportType);
     }, [dispatch, reportType]);
