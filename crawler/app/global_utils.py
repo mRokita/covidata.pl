@@ -16,36 +16,77 @@ polish = gettext.translation('iso3166',
                              languages=['pl'])
 
 
-def cssegi_url(date: datetime.datetime):
-    return (
-        'https://raw.githubusercontent.com/CSSEGISandData/COVID-19'
-        '/master/csse_covid_19_data'
-        '/csse_covid_19_daily_reports/'
-        f'{datetime.datetime.strftime(date, "%m-%d-%Y")}.csv'
-    )
-
-
-def get_polish_name(country_name: str) -> str:
-    if country_name in HARD_COUNTRY_FIXES:
-        return HARD_COUNTRY_FIXES[country_name]
-    try:
-        country = pycountry.countries.search_fuzzy(country_name)[0]
-        country_name = polish.gettext(country.name)
-    except LookupError:
-        logger.warning(f"Couldn't translate '{country_name}'")
-    return country_name
+ISO_LOOKUP_TABLE_URL = ('https://raw.githubusercontent.com/CSSEGISandData/'
+            'COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv')
 
 
 class GlobalCrawler(Crawler):
     report_type = ReportType.GLOBAL
     reports_since = datetime.datetime(year=2020, month=1, day=22)
+    country_name_to_pol = dict(**HARD_COUNTRY_FIXES)
+
+    @classmethod
+    def update_name_to_iso2(cls):
+        logger.info("Loading ISO lookup table")
+        with httpx.Client() as client:
+            data = client.get(ISO_LOOKUP_TABLE_URL)
+        df = pandas.read_csv(StringIO(data.text),
+                             usecols=['Country_Region', 'iso2'])
+        for index, iso2, name in df.itertuples():
+            if pandas.isna(name) or\
+                    pandas.isna(iso2) or name in cls.country_name_to_pol:
+                continue
+            name = name.strip()
+            iso2 = iso2.strip()
+            country = pycountry.countries.get(alpha_2=iso2)
+            if not country:
+                logger.error(f'Country {iso2} not found')
+            iso_name = country.name
+            polish_name = polish.gettext(iso_name)
+            cls.country_name_to_pol[name] = polish_name
+            logger.info(f'Added translation {name} -> {polish_name}')
+
+    def get_download_url(self) -> str:
+        if self.date.date() == datetime.datetime.today().date():
+            return ('https://raw.githubusercontent.com/CSSEGISandData'
+                    '/COVID-19/web-data/data/cases_country.csv')
+        return (
+            'https://raw.githubusercontent.com/CSSEGISandData/COVID-19'
+            '/master/csse_covid_19_data'
+            '/csse_covid_19_daily_reports/'
+            f'{datetime.datetime.strftime(date, "%m-%d-%Y")}.csv'
+        )
+
+    @classmethod
+    def get_polish_name(cls, country_name: str) -> str:
+        if country_name in SKIPPED_GLOBAL_COUNTRIES:
+            return '__removed__'
+        if country_name not in cls.country_name_to_pol:
+            country = pycountry.countries.get(name=country_name)
+            if not country:
+                try:
+                    country = pycountry.countries.search_fuzzy(country_name)[0]
+                except LookupError:
+                    pass
+            if country:
+                polish_name = polish.gettext(country.name)
+                logger.info(
+                    f'Added translation {country_name} -> {polish_name}')
+                cls.country_name_to_pol[country_name] = polish_name
+            else:
+                cls.update_name_to_iso2()
+                if country_name not in cls.country_name_to_pol:
+                    logger.warning(f"Couldn't translate '{country_name}'")
+                    return country_name
+        return cls.country_name_to_pol[country_name]
 
     @classmethod
     def get_missing_record_dates(cls) -> List[datetime.datetime]:
         return super().get_missing_record_dates()
 
     def get_global_cov_data(self) -> Iterator[NamedTuple]:
-        url = cssegi_url(self.date)
+        url = self.get_download_url()
+        logger.info(f'Loading {url}...')
         with httpx.Client() as client:
             data = client.get(url)
         if data.status_code == 404:
@@ -54,7 +95,9 @@ class GlobalCrawler(Crawler):
             raise HTTPError(
                 f'date: {self.date}, code: {data.status_code}')
 
+        logger.info(f'{url} downloaded, parsing...')
         df = pandas.read_csv(StringIO(data.text))
+        logger.info("CSV loaded")
         df = df.rename(columns={
             'Country/Region': 'Country_Region'
         })
@@ -63,12 +106,11 @@ class GlobalCrawler(Crawler):
                                                                 "")
         df['Country_Region'] = df['Country_Region'].apply(
             self.translate_country_name)
+        logger.info("Parsing done")
         return df.groupby(['Country_Region']).sum().itertuples()
 
     def translate_country_name(self, name):
-        if name in SKIPPED_GLOBAL_COUNTRIES:
-            return "__removed__"
-        name = get_polish_name(name)
+        name = self.get_polish_name(name.strip())
         return name
 
     def fetch(self):
@@ -78,6 +120,10 @@ class GlobalCrawler(Crawler):
             if country_name == '__removed__':
                 continue
             region_id = self.get_region_id(country_name)
+            if country_name == 'Polska':
+                # We use more recent data from gov.pl for that
+                total_cases = None
+                total_deaths = None
             self.submit_day_report(
                 region_id=region_id,
                 cases=total_cases,

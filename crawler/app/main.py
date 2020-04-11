@@ -9,6 +9,7 @@ CRAWLERS = [GlobalCrawler, LocalCrawler]
 
 
 if __name__ == '__main__':
+    GlobalCrawler.update_name_to_iso2()
     while True:
         for crawler in CRAWLERS:
             logger.info(f"Running crawler"

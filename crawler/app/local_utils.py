@@ -5,10 +5,8 @@ from datetime import timedelta
 from json import loads
 import re
 from typing import List
-
 import httpx
-from loguru import logger
-
+from html import unescape
 from common import Crawler, ReportType, date_str, Client
 from config import WAYBACK_SNAPSHOT_LIST_URL, PL_GOV_URL
 
@@ -17,10 +15,6 @@ class LocalCrawler(Crawler):
     report_type = ReportType.LOCAL
     reports_since = datetime(year=2020, month=3, day=9)
     enable_today = True
-
-    @classmethod
-    def get_missing_record_dates(cls) -> List[datetime]:
-        return super().get_missing_record_dates() + [datetime.today()]
 
     def fetch(self):
         data = self.get_data()
@@ -128,4 +122,6 @@ class LocalCrawler(Crawler):
                 if 'id="registerData"' in line:
                     tag = line
                     break
-        return loads(loads(re.sub('<(.+?)>', '', tag))["parsedData"])
+        json = unescape(re.sub('<(.+?)>', '', tag))
+        data = loads(loads(json)["parsedData"])
+        return data

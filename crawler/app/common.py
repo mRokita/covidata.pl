@@ -37,6 +37,9 @@ class Crawler:
         self.date = date
         self._regions = self.get_regions()
 
+    def get_download_url(self) -> str:
+        raise NotImplementedError
+
     @classmethod
     def get_missing_record_dates(cls) -> List[datetime.datetime]:
         """
@@ -54,7 +57,8 @@ class Crawler:
             start=cls.reports_since,
             end=today
         )
-        missing = required - downloaded
+        missing = list(required - downloaded)
+        missing += [datetime.datetime.today()]
         return sorted(missing)
 
     def get_region_id(self, name):
