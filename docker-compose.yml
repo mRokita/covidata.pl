@@ -17,7 +17,7 @@ services:
     depends_on:
       - api
     healthcheck:
-      test: curl -sS http://127.0.0.1
+      test: curl -sS http://127.0.0.1 || exit 1
       interval: 5s
       timeout: 10s
       retries: 3
@@ -39,7 +39,7 @@ services:
         delay: 10s
         failure_action: rollback
     healthcheck:
-      test: curl -sS http://127.0.0.1/api/v1/regions
+      test: curl -sS http://127.0.0.1/api/v1/regions || exit 1
       interval: 5s
       timeout: 10s
       retries: 3

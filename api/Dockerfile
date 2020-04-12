@@ -10,6 +10,6 @@ RUN \
     apk add --no-cache --virtual .build-deps make gcc musl-dev postgresql-dev && \
     pip install -r /requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
-
+RUN apk add --no-cache curl
 ENV STAGE=PRODUCTION
 COPY ./app /app
