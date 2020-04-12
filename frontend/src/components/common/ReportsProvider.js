@@ -34,7 +34,7 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
     useEffect(() => {
         loadReports(dispatch, reportType);
     }, [dispatch, reportType]);
-    const modalUrl = `${urlPrefix}/:reportType/:regionName/:regionId`;
+    const modalUrl = `${urlPrefix}/:reportType/:regionName/:regionId?`; // Region id is unknown for snapshot generator
     const c = ()=> modalComponent({exitUrl: `${urlPrefix}/${reportType}`});
     if (!['global', 'local'].includes(reportType))
         return <Redirect to={"/404"} />;
@@ -44,7 +44,7 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
                 {React.Children.map(children, child => React.cloneElement(child, {reportType: reportType}))}
                 <Switch>
                     <Route exact path={path} />
-                    <Route exact path={modalUrl} component={c}/>
+                    <Route path={modalUrl} component={c}/>
                     <Redirect to="/404" />
                 </Switch>
             </Container>

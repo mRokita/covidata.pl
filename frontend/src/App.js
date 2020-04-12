@@ -135,7 +135,7 @@ function App() {
     return (
         <Router history={history}>
             <CssBaseline/>
-            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"} defaultTitle={"covidata.pl - Koronawirus. Rzetelnie\""}>
+            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"} defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
                 <meta name="keywords"
                       content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
                 <meta name="description" content=""/>

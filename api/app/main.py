@@ -37,7 +37,9 @@ origins = [
     "https://covidata.pl",
     "https://coronadata.pl",
     "http://localhost",
+    "http://frontend",
     "http://localhost:3000",
+    "http://localhost:5000",
     "http://192.168.1.14:3000",
     "http://192.168.42.247:3000"
 ]
@@ -141,7 +143,7 @@ async def create_region(region: RegionCreate,
     db_region_id = await database.execute(
         regions.insert(), values=region.dict()
     )
-    return Region(**region.dict(), id=db_region_id)
+    return Region(**region.dict(), id=db_region_id).dict()
 
 
 @app.get("/api/v1/latest_day_reports", response_model=List[LatestDayReport])
@@ -208,7 +210,7 @@ async def read_day_report(region_id: int,
         raise HTTPException(
             status_code=404, detail='Day report does not exist.'
         )
-    return data
+    return DayReport(**data).dict()
 
 
 @app.put("/api/v1/regions/{region_id}/day_reports", response_model=DayReport)

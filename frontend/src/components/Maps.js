@@ -105,11 +105,9 @@ const Map = ({reportType}) => {
 
 
     }, [reports]);
-    if(!reports.length) return null;
+    if(!reports.length) return <Helmet><title>Mapy</title></Helmet>;
     return <Container>
-        <Helmet>
-            <title>Mapy</title>
-        </Helmet>
+        <Helmet><title>Mapy</title></Helmet>
         <Grid container justify='center' style={{marginBottom: 20}}>
             <Grid item xl={8} xs={12} md={10}>
                 <MapChart

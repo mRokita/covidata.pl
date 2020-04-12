@@ -58,11 +58,17 @@ export function DetailModal({exitUrl}){
     const history = useHistory();
     const closeHandler = () => setOpen(false);
     const exitedHandler = () => history.replace(exitUrl);
+    const meta = <Helmet>
+        <title>{regionName}</title>
+    </Helmet>;
+    if(!(reportType && regionId && regionName)){
+        // history.replace("/404");
+        console.log(reportType, regionId, regionName);
+        return meta;
+    }
     return (
         <Dialog open={open} fullScreen onClose={closeHandler} onExited={exitedHandler} TransitionComponent={Transition}>
-            <Helmet>
-                <title>{regionName}</title>
-            </Helmet>
+            {meta}
             <DetailModalToolbar regionId={regionId} reportType={reportType} regionName={regionName} onClose={closeHandler}/>
             <DialogContent style={{padding: '20px'}} onClose={closeHandler}>
                 <Grid container spacing={3}>

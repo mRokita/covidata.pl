@@ -14,6 +14,13 @@ services:
       update_config:
         delay: 10s
         failure_action: rollback
+    depends_on:
+      - api
+    healthcheck:
+      test: curl -sS http://127.0.0.1
+      interval: 5s
+      timeout: 10s
+      retries: 3
     networks:
       - default
       - traefik
@@ -31,6 +38,14 @@ services:
       update_config:
         delay: 10s
         failure_action: rollback
+    healthcheck:
+      test: curl -sS http://127.0.0.1/api/v1/regions
+      interval: 5s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - db
+      - redis
     networks:
       - default
       - traefik
@@ -58,6 +73,8 @@ services:
       - default
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - api
 networks:
   traefik:
     external: true

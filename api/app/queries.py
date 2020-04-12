@@ -17,7 +17,7 @@ def filter_by_day_report(query: TableClause,
     )
 
 
-async def get_day_report(region_id: int, date: datetime.date) -> DayReport:
+async def get_day_report(region_id: int, date: datetime.date):
     return await database.fetch_one(
         filter_by_day_report(day_reports.select(), region_id, date)
     )
