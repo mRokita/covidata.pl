@@ -15,9 +15,9 @@ const globalSettings = {
     reducerKey: 'globalReports',
     regionLabel: "Kraj",
     map: {
+        enableZoom: true,
         projectionConfig: {
             scale: 140,
-            enableZoom: true,
         }
     },
     detail: [
