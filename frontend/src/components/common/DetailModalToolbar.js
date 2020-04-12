@@ -8,7 +8,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import blue from "@material-ui/core/colors/blue";
 import axios from "axios";
 import {API_URL} from "../../index";
-import {Redirect, Switch, useLocation, useHistory, matchPath, useParams, Route} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 
 const useStyles = makeStyles(theme => ({
@@ -42,7 +42,7 @@ export const DetailModalToolbar = ({regionId, regionName, reportType, onClose}) 
         }).catch(error => {
             history.push("/404");
         })
-    }, [regionId, regionName]);
+    }, [history, reportType, regionId, regionName]);
     return (
         <AppBar position="static">
             <Toolbar className={classes.detailToolbar}>

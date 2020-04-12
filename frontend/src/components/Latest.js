@@ -5,8 +5,8 @@ import {LoadingCircle} from "./common/LoadingCircle";
 import {useSelector} from "react-redux";
 import {Alert} from "@material-ui/lab"
 import {Redirect} from "react-router-dom";
-import {statsSettings} from "./Stats";
 import LatestTable from "./LatestTable";
+import {reportTypeSettings} from "../config";
 
 
 const LatestChartsAlert = (props) => {
@@ -23,8 +23,8 @@ const LatestChartsAlert = (props) => {
 
 
 export const Latest = React.memo(function Latest({reportType}){
-    if(!statsSettings.hasOwnProperty(reportType)) return <Redirect to="/404" />;
-    const settings = statsSettings[reportType];
+    if(!reportTypeSettings.hasOwnProperty(reportType)) return <Redirect to="/404" />;
+    const settings = reportTypeSettings[reportType];
     return (
         <React.Fragment>
             <LatestFilterBox reducerKey={settings.reducerKey} reportType={settings.reportType}/>

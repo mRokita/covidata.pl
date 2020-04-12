@@ -5,10 +5,10 @@ import React, {useMemo, useRef} from "react";
 import {useSelector} from "react-redux";
 import TableCell from "@material-ui/core/TableCell";
 import WindowScroller from "react-virtualized/dist/commonjs/WindowScroller";
-import {Redirect, useLocation, useHistory, Route, useParams} from "react-router-dom";
+import {useHistory, useRouteMatch} from "react-router-dom";
 import Typography from "@material-ui/core/Typography";
 import {useWindowWidth} from "@react-hook/window-size";
-import {useRouteMatch} from "react-router-dom";
+
 const cellRenderer = ({cellData, columnIndex, style}) => {
     return (
         <TableCell

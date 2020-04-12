@@ -8,12 +8,12 @@ import {CardChart} from "./CardChart";
 import Grid from "@material-ui/core/Grid";
 import Slide from "@material-ui/core/Slide";
 import {useHistory, useParams} from "react-router-dom";
-import {statsSettings} from "../Stats";
+import {reportTypeSettings} from "../../config";
 
 
 function DetailBody({reportType, regionId}){
     const [data, setData] = useState([]);
-    const settings = statsSettings[reportType];
+    const settings = reportTypeSettings[reportType];
     useEffect(() => {
         axios.get(`${API_URL}regions/${regionId}/day_reports`)
             .then((response) => {
@@ -51,12 +51,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export function DetailModal(){
+export function DetailModal({exitUrl}){
     const {reportType, regionName, regionId} = useParams();
     const [open, setOpen] = useState(true);
     const history = useHistory();
     const closeHandler = () => setOpen(false);
-    const exitedHandler = () => history.replace(`/stats/${reportType}`);
+    const exitedHandler = () => history.replace(exitUrl);
     return (
         <Dialog open={open} fullScreen onClose={closeHandler} onExited={exitedHandler} TransitionComponent={Transition}>
             <DetailModalToolbar regionId={regionId} reportType={reportType} regionName={regionName} onClose={closeHandler}/>
