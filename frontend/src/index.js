@@ -5,14 +5,18 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {Provider} from "react-redux";
 import store from "./redux/store";
-
+import ReactGA from 'react-ga';
 const HOST = window.location.hostname;
-let api_url = 'http://192.168.1.14:8000/api/v1/';
+let debug_url = 'http://192.168.1.14:8000/api/v1/';
+let api_url = debug_url;
 if (HOST === 'covidata.localhost') {
     api_url = 'http://covidata.localhost/api/v1/';
 } else if (HOST === 'covidata.pl') {
     api_url = 'https://covidata.pl/api/v1/';
 }
+
+ReactGA.initialize('UA-48787386-2', {debug: debug_url === api_url});
+ReactGA.pageview(window.location.pathname);
 
 export const API_URL = api_url;
 

@@ -10,6 +10,7 @@ import Slide from "@material-ui/core/Slide";
 import {useHistory, useParams} from "react-router-dom";
 import {reportTypeSettings} from "../../config";
 
+import {Helmet} from "react-helmet";
 
 function DetailBody({reportType, regionId}){
     const [data, setData] = useState([]);
@@ -59,6 +60,9 @@ export function DetailModal({exitUrl}){
     const exitedHandler = () => history.replace(exitUrl);
     return (
         <Dialog open={open} fullScreen onClose={closeHandler} onExited={exitedHandler} TransitionComponent={Transition}>
+            <Helmet>
+                <title>{regionName}</title>
+            </Helmet>
             <DetailModalToolbar regionId={regionId} reportType={reportType} regionName={regionName} onClose={closeHandler}/>
             <DialogContent style={{padding: '20px'}} onClose={closeHandler}>
                 <Grid container spacing={3}>

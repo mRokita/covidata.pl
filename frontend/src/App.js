@@ -13,10 +13,11 @@ import Avatar from "@material-ui/core/Avatar";
 import MapIcon from '@material-ui/icons/Map';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import InfoIcon from '@material-ui/icons/Info';
+import createHistory from 'history/createBrowserHistory';
 
 
 import {
-    BrowserRouter as Router,
+    Router,
     Switch,
     Route,
     useHistory,
@@ -30,6 +31,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 import Maps from "./components/Maps";
+import {Helmet} from "react-helmet";
+import ReactGA from "react-ga";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -57,56 +60,91 @@ function Nav() {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const history = useHistory();
-    const clickHandler = (url) => () => {history.push(url); setDrawerOpen(false);}
+    const clickHandler = (url) => () => {
+        history.push(url);
+        setDrawerOpen(false);
+    }
     return <React.Fragment>
 
         <AppBar position="fixed" className={classes.toolbar}>
             <Toolbar className={classes.toolbar}>
-                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={() => setDrawerOpen(!drawerOpen)}>
+                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
+                            onClick={() => setDrawerOpen(!drawerOpen)}>
                     <MenuIcon className={classes.menuIcon}/>
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                     <Link to="/" className={classes.title}>covidata.pl</Link>
                 </Typography>
                 <a href={"https://pw.edu.pl"}><Avatar src="/wut.png"
-                        imgProps={{"style": {objectFit: 'contain', height: '34px', transform: 'rotate(90deg)'}}}
-                                                   variant="square"/></a>
-                <a href={"http://elka.pw.edu.pl"}><Avatar src="/weiti.png" imgProps={{"style": {objectFit: 'contain', height: '30px', paddingTop: 2}}}
-                                                           variant="square"/></a>
+                                                      imgProps={{
+                                                          "style": {
+                                                              objectFit: 'contain',
+                                                              height: '34px',
+                                                              transform: 'rotate(90deg)'
+                                                          }
+                                                      }}
+                                                      variant="square"/></a>
+                <a href={"http://elka.pw.edu.pl"}><Avatar src="/weiti.png" imgProps={{
+                    "style": {
+                        objectFit: 'contain',
+                        height: '30px',
+                        paddingTop: 2
+                    }
+                }}
+                                                          variant="square"/></a>
             </Toolbar>
         </AppBar>
         <SwipeableDrawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onOpen={() => setDrawerOpen(true)}>
-        <div role="presentation"
-             style={{width: 250}}>
-            <div style={{backgroundColor: blue[500], height: 160}}><Typography variant={"h2"} align={"center"} style={{color: 'white', height: 160, paddingTop: 70}}>covidata</Typography></div>
-            <List style={{width: 250}}>
+            anchor="left"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            onOpen={() => setDrawerOpen(true)}>
+            <div role="presentation"
+                 style={{width: 250}}>
+                <div style={{backgroundColor: blue[500], height: 160}}><Typography variant={"h2"} align={"center"}
+                                                                                   style={{
+                                                                                       color: 'white',
+                                                                                       height: 160,
+                                                                                       paddingTop: 70
+                                                                                   }}>covidata</Typography></div>
+                <List style={{width: 250}}>
                     <ListItem button onClick={clickHandler("/stats")}>
                         <ListItemIcon><EqualizerIcon/></ListItemIcon>
-                        <ListItemText primary="Statystyki" />
+                        <ListItemText primary="Statystyki"/>
                     </ListItem>
                     <ListItem button onClick={clickHandler("/maps")}>
                         <ListItemIcon><MapIcon/></ListItemIcon>
-                        <ListItemText primary="Mapa" />
+                        <ListItemText primary="Mapa"/>
                     </ListItem>
-                <ListItem button>
-                    <ListItemIcon><InfoIcon/></ListItemIcon>
-                    <ListItemText primary="Informacje" />
-                </ListItem>
+                    <ListItem button>
+                        <ListItemIcon><InfoIcon/></ListItemIcon>
+                        <ListItemText primary="Informacje"/>
+                    </ListItem>
                 </List>
             </div>
-    </SwipeableDrawer>
+        </SwipeableDrawer>
     </React.Fragment>
 }
+
+const history = createHistory();
+history.listen((location, action) => {
+    ReactGA.pageview(window.location.pathname);
+});
+
 function App() {
     return (
-        <Router>
+        <Router history={history}>
             <CssBaseline/>
+            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"} defaultTitle={"covidata.pl - Koronawirus. Rzetelnie\""}>
+                <meta name="keywords"
+                      content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
+                <meta name="description" content=""/>
+                <link rel="canonical" href="https://covidata.pl"/>
+                <meta charSet="utf-8"/>
+                <meta lang="pl" />
+            </Helmet>
             <Nav/>
-            <div style={{marginBottom: 80}} />
+            <div style={{marginBottom: 80}}/>
             <Switch>
                 <Route exact path="/">
                     <Redirect to="/maps"/>
@@ -118,9 +156,9 @@ function App() {
                     <Redirect to="/maps/local"/>
                 </Route>
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
-                <Route path="/stats/:reportType" render={()=> <Stats/>}/>
+                <Route path="/stats/:reportType" render={() => <Stats/>}/>
                 <Route exact path="/404" component={Http404}/>
-                <Redirect to="/404" />
+                <Redirect to="/404"/>
             </Switch>
         </Router>
     );

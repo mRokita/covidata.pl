@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import {useSelector} from "react-redux";
 import {reportTypeSettings} from "../config";
 import purple from "@material-ui/core/colors/purple";
+import {Helmet} from "react-helmet";
 
 export default function Maps() {
     return <ReportsProvider urlPrefix={"/maps"} modalComponent={DetailModal}>
@@ -106,6 +107,9 @@ const Map = ({reportType}) => {
     }, [reports]);
     if(!reports.length) return null;
     return <Container>
+        <Helmet>
+            <title>Mapy</title>
+        </Helmet>
         <Grid container justify='center' style={{marginBottom: 20}}>
             <Grid item xl={8} xs={12} md={10}>
                 <MapChart
@@ -134,27 +138,26 @@ const Region = ({geo, report, getColor}) => {
     const {url} = useRouteMatch();
     const history = useHistory();
     const clickHandler = () => history.push(`${url}/${report.region_name}/${report.region_id}`);
+    const borderColor = '#333';
     return (<Geography
             onClick={report ? clickHandler : null}
             key={geo.rsmKey}
             geography={geo}
             style={{
                 default: {
-                    stroke: color,
+                    stroke: borderColor,
                     fill: color,
-                    strokeWidth: 0,
                     outline: 'none'
                 },
                 hover: {
-                    stroke: '#F53',
+                    stroke: borderColor,
                     fill: color,
-                    strokeWidth: report ? 1 : 0,
+                    strokeWidth: report ? 2 : 1,
                     outline: 'none'
                 },
                 pressed: {
-                    stroke: '#F53',
+                    stroke: borderColor,
                     fill: color,
-                    strokeWidth: report ? 1 : 0,
                     outline: 'none'
                 }
             }}/>

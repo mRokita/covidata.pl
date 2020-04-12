@@ -7,6 +7,7 @@ import {Alert} from "@material-ui/lab"
 import {Redirect} from "react-router-dom";
 import LatestTable from "./LatestTable";
 import {reportTypeSettings} from "../config";
+import {Helmet} from "react-helmet";
 
 
 const LatestChartsAlert = (props) => {
@@ -27,6 +28,9 @@ export const Latest = React.memo(function Latest({reportType}){
     const settings = reportTypeSettings[reportType];
     return (
         <React.Fragment>
+            <Helmet>
+                <title>Statystyki</title>
+            </Helmet>
             <LatestFilterBox reducerKey={settings.reducerKey} reportType={settings.reportType}/>
             <LatestChartsAlert reducerKey={settings.reducerKey}/>
             <Paper style={{marginTop: 20}}>

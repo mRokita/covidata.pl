@@ -33,7 +33,6 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
     const { path } = useRouteMatch();
     useEffect(() => {
         loadReports(dispatch, reportType);
-        console.log('load')
     }, [dispatch, reportType]);
     const modalUrl = `${urlPrefix}/:reportType/:regionName/:regionId`;
     const c = ()=> modalComponent({exitUrl: `${urlPrefix}/${reportType}`});
