@@ -8,7 +8,10 @@ import {Redirect} from "react-router-dom";
 import LatestTable from "./LatestTable";
 import {reportTypeSettings} from "../config";
 import {Helmet} from "react-helmet";
-
+import EqualizerIcon from "@material-ui/icons/Equalizer";
+import Fab from "@material-ui/core/Fab";
+import {useHistory} from "react-router-dom";
+import MapIcon from '@material-ui/icons/Map';
 
 const LatestChartsAlert = (props) => {
     const reportsLoaded = useSelector(state => state[props.reducerKey].reportsLoaded);
@@ -24,6 +27,7 @@ const LatestChartsAlert = (props) => {
 
 
 export const Latest = React.memo(function Latest({reportType}){
+    const history = useHistory();
     if(!reportTypeSettings.hasOwnProperty(reportType)) return <Redirect to="/404" />;
     const settings = reportTypeSettings[reportType];
     return (
@@ -37,7 +41,11 @@ export const Latest = React.memo(function Latest({reportType}){
             <LatestTable settings={settings} />
             </Paper>
             <LoadingCircle reducerKey={settings.reducerKey}/>
-
+            <Fab style={{position: 'fixed', right: 40, bottom: 100}}
+                 onClick={() => history.push(`/maps/${reportType}`)}
+                 color="primary" alt="Przejdź do mapy">
+                <MapIcon />
+            </Fab>
         </React.Fragment>
     )
 });

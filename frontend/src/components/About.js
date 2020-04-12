@@ -16,7 +16,12 @@ export function About() {
     }, []);
     return <React.Fragment>
         <Container component={Paper} style={{padding: 20}}>
-            <ReactMarkdown className={"markdown-body"} source={content}/>
+            <ReactMarkdown
+                className={"markdown-body"}
+                source={content}
+                escapeHtml={false}
+                skipHtml={false}
+            />
         </Container>
     </React.Fragment>
 }

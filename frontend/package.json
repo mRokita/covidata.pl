@@ -477,11 +477,11 @@
       "/maps/local/dolno%C5%9Bl%C4%85skie",
       "/stats/local/dolno%C5%9Bl%C4%85skie",
       "/maps/local",
-      "/stats/local",
       "/maps/global",
+      "/stats/local",
       "/stats/global"
     ],
-    "snapshotDelay": 0
+    "snapshotDelay": 300
   },
   "dependencies": {
     "@material-ui/core": "^4.9.8",

@@ -12,13 +12,6 @@ import {useHistory} from "react-router-dom";
 
 
 const useStyles = makeStyles(theme => ({
-    detailToolbar: {
-        background: '#ffffff',
-        color: blue[500]
-    },
-    closeIcon: {
-        fill: blue[500],
-    },
     title: {
         flexGrow: 1,
     },

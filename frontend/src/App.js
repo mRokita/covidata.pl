@@ -46,16 +46,6 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         color: blue[500],
         textDecoration: 'none',
-    },
-    menuButton: {
-        marginRight: theme.spacing(2)
-    },
-    menuIcon: {
-        fill: blue[500]
-    },
-    toolbar: {
-        background: '#ffffff',
-        color: blue[500],
     }
 }));
 
@@ -66,12 +56,12 @@ function Nav() {
     const clickHandler = (url) => () => {
         history.push(url);
         setDrawerOpen(false);
-    }
+    };
     return <React.Fragment>
 
-        <AppBar position="fixed" className={classes.toolbar}>
+        <AppBar color="secondary" position="fixed">
             <Toolbar className={classes.toolbar}>
-                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"
+                <IconButton edge="start" color="inherit" aria-label="menu"
                             onClick={() => setDrawerOpen(!drawerOpen)}>
                     <MenuIcon className={classes.menuIcon}/>
                 </IconButton>

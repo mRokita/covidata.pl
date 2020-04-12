@@ -9,6 +9,8 @@ import {useSelector} from "react-redux";
 import {reportTypeSettings} from "../config";
 import purple from "@material-ui/core/colors/purple";
 import {Helmet} from "react-helmet";
+import Fab from "@material-ui/core/Fab";
+import EqualizerIcon from '@material-ui/icons/Equalizer';
 
 export default function Maps() {
     return <ReportsProvider urlPrefix={"/maps"} modalComponent={DetailModal}>
@@ -92,6 +94,7 @@ function getBreakpointFunc(reports) {
 const Map = ({reportType}) => {
     const settings = reportTypeSettings[reportType];
     const {reducerKey, map} = settings;
+    const history = useHistory();
     const reports = useSelector(state => (state[reducerKey].reports));
     const scaleColors = useMemo(getScaleColors, []);
     const [breakpoints, getBreakpoint] = useMemo(() => getBreakpointFunc(reports), [reports]);
@@ -101,7 +104,6 @@ const Map = ({reportType}) => {
             obj[report.region_name] = report
         );
         return obj;
-
 
 
     }, [reports]);
@@ -128,6 +130,11 @@ const Map = ({reportType}) => {
                 </Grid>
             )}
         </Grid>
+        <Fab style={{position: 'fixed', right: 40, bottom: 100}}
+             onClick={() => history.push(`/stats/${reportType}`)}
+             color="primary" alt="Przejdź do statystyk">
+            <EqualizerIcon />
+        </Fab>
     </Container>
 };
 
