@@ -47,7 +47,7 @@ class GlobalCrawler(Crawler):
             logger.info(f'Added translation {name} -> {polish_name}')
 
     def get_download_url(self) -> str:
-        if self.date.date() == datetime.datetime.today().date():
+        if self.is_today:
             return ('https://raw.githubusercontent.com/CSSEGISandData'
                     '/COVID-19/web-data/data/cases_country.csv')
         return (
@@ -120,7 +120,7 @@ class GlobalCrawler(Crawler):
             if country_name == '__removed__':
                 continue
             region_id = self.get_region_id(country_name)
-            if country_name == 'Polska':
+            if country_name == 'Polska' and self.is_today:
                 # We use more recent data from gov.pl for that
                 total_cases = None
                 total_deaths = None

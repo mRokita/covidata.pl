@@ -89,7 +89,7 @@ class LocalCrawler(Crawler):
         Retrieve urls for web.archive.org snapshots of gov.pl cov site
         :return: Urls for gov.pl COV site
         """
-        if self.date.date() == datetime.today().date():
+        if self.is_today:
             return PL_GOV_URL
 
         with httpx.Client() as c:

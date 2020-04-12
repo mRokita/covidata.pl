@@ -74,6 +74,10 @@ class Crawler:
         """
         raise NotImplementedError
 
+    @property
+    def is_today(self) -> bool:
+        return self.date.date() == datetime.datetime.today().date()
+
     def submit_download_success(self):
         """Notify the server about a successfull download"""
         with Client() as client:
