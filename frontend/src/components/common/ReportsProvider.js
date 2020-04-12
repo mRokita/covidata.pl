@@ -33,6 +33,7 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
     const { path } = useRouteMatch();
     useEffect(() => {
         loadReports(dispatch, reportType);
+        console.log('load')
     }, [dispatch, reportType]);
     const modalUrl = `${urlPrefix}/:reportType/:regionName/:regionId`;
     const c = ()=> modalComponent({exitUrl: `${urlPrefix}/${reportType}`});
@@ -44,7 +45,7 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
                 {React.Children.map(children, child => React.cloneElement(child, {reportType: reportType}))}
                 <Switch>
                     <Route exact path={path} />
-                    <Route exact path={modalUrl} component={c}></Route>
+                    <Route exact path={modalUrl} component={c}/>
                     <Redirect to="/404" />
                 </Switch>
             </Container>

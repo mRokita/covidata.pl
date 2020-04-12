@@ -6,6 +6,10 @@ import AreaChart from "recharts/lib/chart/AreaChart";
 import Area from "recharts/lib/cartesian/Area";
 
 
+
+
+
+
 const globalSettings = {
     reportType: 'global',
     reducerKey: 'globalReports',
@@ -13,6 +17,7 @@ const globalSettings = {
     map: {
         projectionConfig: {
             scale: 140,
+            enableZoom: true,
         }
     },
     detail: [
@@ -53,6 +58,7 @@ const localSettings = {
     reducerKey: 'localReports',
     regionLabel: "Województwo",
     map: {
+        enableZoom: false,
         projection: "geoAzimuthalEqualArea",
         projectionConfig: {
             rotate: [-20.0, -52.0, 0],

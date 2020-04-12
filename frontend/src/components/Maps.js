@@ -162,27 +162,28 @@ const Region = ({geo, report, getColor}) => {
 };
 
 const MapChart = ({getBreakpoint, scaleColors, reportMap, reportType, mapConfig}) => {
-    const {projection, projectionConfig} = mapConfig;
+    const {projection, projectionConfig, enableZoom} = mapConfig;
     const getColor = (cases) => scaleColors[getBreakpoint(cases)];
-    const C = reportType === 'local' ? ({children}) => children : ZoomableGroup;
+    const map = <React.Fragment>
+        {reportType === 'global' ? <Graticule stroke={COLOR[50]}/>: null}
+        <Geographies geography={`/map-${reportType}.json`}>
+            {
+                ({geographies}) => geographies.map(geo => <Region geo={geo}
+                                                                  key={geo.rsmKey}
+                                                                  getColor={getColor}
+                                                                  report={reportMap[geo.properties.name]} />
+                )
+            }
+        </Geographies>
+    </React.Fragment>;
+
     return (
         <ComposableMap projection={projection}
                        projectionConfig={projectionConfig}>
-
-            <C zoom={1} minZoom={1} maxZoom={10}>
-
-                {reportType === 'global' ? <Graticule stroke={COLOR[50]}/>: null}
-            <Geographies geography={`/map-${reportType}.json`}>
-                {
-                    ({geographies}) => geographies.map(geo => <Region geo={geo}
-                                                                      key={geo.rsmKey}
-                                                                      getColor={getColor}
-                                                                      report={reportMap[geo.properties.name]} />
-                    )
-                }
-            </Geographies>
-
-            </C>
+            {enableZoom ?
+            <ZoomableGroup zoom={1} minZoom={1} maxZoom={10}>
+                {map}
+            </ZoomableGroup> : map}
         </ComposableMap>
     )
 };

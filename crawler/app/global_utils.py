@@ -54,7 +54,7 @@ class GlobalCrawler(Crawler):
             'https://raw.githubusercontent.com/CSSEGISandData/COVID-19'
             '/master/csse_covid_19_data'
             '/csse_covid_19_daily_reports/'
-            f'{datetime.datetime.strftime(date, "%m-%d-%Y")}.csv'
+            f'{datetime.datetime.strftime(self.date, "%m-%d-%Y")}.csv'
         )
 
     @classmethod
