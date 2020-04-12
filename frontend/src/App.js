@@ -33,6 +33,9 @@ import List from "@material-ui/core/List";
 import Maps from "./components/Maps";
 import {Helmet} from "react-helmet";
 import ReactGA from "react-ga";
+import {About} from "./components/About";
+
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -116,9 +119,9 @@ function Nav() {
                         <ListItemIcon><MapIcon/></ListItemIcon>
                         <ListItemText primary="Mapa"/>
                     </ListItem>
-                    <ListItem button>
+                    <ListItem button onClick={clickHandler("/about")}>
                         <ListItemIcon><InfoIcon/></ListItemIcon>
-                        <ListItemText primary="Informacje"/>
+                        <ListItemText primary="O nas"/>
                     </ListItem>
                 </List>
             </div>
@@ -155,6 +158,7 @@ function App() {
                 <Route exact path="/maps/">
                     <Redirect to="/maps/local"/>
                 </Route>
+                <Route exact path={"/about"} render={() => <About/>} />
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
                 <Route path="/stats/:reportType" render={() => <Stats/>}/>
                 <Route exact path="/404" component={Http404}/>
