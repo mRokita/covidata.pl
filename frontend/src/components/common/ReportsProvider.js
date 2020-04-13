@@ -9,7 +9,6 @@ import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import {Emojione, Twemoji} from "react-emoji-render";
 
 function loadReports(dispatch, type) {
     axios.get(API_URL + 'latest_day_reports?report_type=' + type)
@@ -51,6 +50,16 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
             <div style={{height: '50px'}}>&nbsp;</div>
             <Box boxShadow={5} style={{position: 'fixed', bottom: 0, width: '100%'}}>
                 <BottomNavigation
+
+
+
+
+
+
+
+
+
+
                     showLabels
                     onChange={(event, newValue) => {
                         if(reportType !== newValue) dispatch(clearReports(reportType));
@@ -59,10 +68,10 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
                     value={reportType}>
                     <BottomNavigationAction label="Polska"
                                             value={"local"}
-                                            icon={<Emojione style={{height: 30, fontSize: '26px'}} text="🇵🇱"/>}/>
+                                            icon={<img src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/1f1f5-1f1f1.png" style={{height: 30, fontSize: '26px', marginBottom: 3}} alt="🇵🇱"/>}/>
                     <BottomNavigationAction label="Świat"
                                             value={"global"}
-                                            icon={<Twemoji style={{height: 30, fontSize: '25px'}} text={"🌍"}/>}/>
+                                            icon={<img src="https://twemoji.maxcdn.com/2/72x72/1f30d.png" style={{height: 30, fontSize: '25px', marginBottom: 3}} alt={"🌍"}/>}/>
                 </BottomNavigation>
             </Box>
         </React.Fragment>

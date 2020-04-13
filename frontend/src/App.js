@@ -28,7 +28,6 @@ if (navigator.userAgent !== 'ReactSnap') {
 
 function App() {
     let url = window.location.pathname;
-    let description = document.querySelector('meta[name="description"]').content;
     url = url === '/' ? '/index' : url;
     return (
         <Router history={history}>
