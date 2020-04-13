@@ -12,7 +12,9 @@ const HOST = window.location.hostname;
 let debug_url = 'http://192.168.1.14:8000/api/v1/';
 let api_url = `${debug_url}`;
 
-if (HOST === 'covidata.localhost') {
+if (navigator.userAgent !== 'ReactSnap'){
+    api_url = 'https://covidata.pl'
+} else if (HOST === 'covidata.localhost') {
     api_url = 'http://covidata.localhost/api/v1/';
 } else if (HOST === 'frontend') {
     api_url = 'http://api/api/v1/';

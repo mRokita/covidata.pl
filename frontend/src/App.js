@@ -164,11 +164,11 @@ function App() {
                 <Route exact path="/maps/">
                     <Redirect to="/maps/local"/>
                 </Route>
-                <Route exact path={"/about"} render={() => <MarkdownPage src={"/md/about.md"}/>} />
-                <Route exact path={"/mity"} render={() => <MarkdownPage src={"/md/mity.md"}/>} />
-                <Route exact path={"/zagrozenie-i-smiertelnosc"} render={() => <MarkdownPage src={"/md/zagrozenie-i-smiertelnosc.md"}/>} />
-                <Route exact path={"/symptomy"} render={() => <MarkdownPage src={"/md/symptomy.md"}/>} />
-                <Route exact path={"/podstawowe-informacje"} render={() => <MarkdownPage src={"/md/podstawowe-informacje.md"}/>} />
+                <Route exact path={"/about"} render={() => <MarkdownPage src={"/md/about.md"} title={"O nas"}/>} />
+                <Route exact path={"/mity"} render={() => <MarkdownPage src={"/md/mity.md"} title={"Fakty, mity, ciekawostki"}/>} />
+                <Route exact path={"/zagrozenie-i-smiertelnosc"} render={() => <MarkdownPage src={"/md/zagrozenie-i-smiertelnosc.md"} title={"Zagrożenie i śmiertelność"}/>} />
+                <Route exact path={"/symptomy"} render={() => <MarkdownPage src={"/md/symptomy.md"} title={"Symptomy COVID-19"}/>} />
+                <Route exact path={"/podstawowe-informacje"} render={() => <MarkdownPage src={"/md/podstawowe-informacje.md"} title={"Podstawowe informacje"}/>} />
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
                 <Route path="/stats/:reportType" render={() => <Stats/>}/>
                 <Route exact path="/404" component={Http404}/>
