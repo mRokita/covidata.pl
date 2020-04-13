@@ -8,10 +8,10 @@ WORKDIR /app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm install
+RUN yarn install
 COPY ./public ./public
 COPY ./src ./src
-RUN npm run build
+RUN yarn build
 
 # Stage 2 - the production environment
 FROM nginx:alpine

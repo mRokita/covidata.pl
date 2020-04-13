@@ -35,10 +35,10 @@
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage"
     ],
-    "skipThirdPartyRequests": true,
-    "sourceMaps": false,
-
-    "crawl": true,
+    "puppeteerExecutablePath": "/usr/bin/chromium-browser",
+    "puppeteer": {
+      "waitUntil": "networkidle0"
+    },
     "include": [
       "/maps/local",
       "/maps/global",
@@ -46,7 +46,8 @@
       "/stats/global",
       "/about",
       "/zagrozenie-i-smiertelnosc",
-      "/mity"
+      "/mity",
+      "/podstawowe-informacje"
     ],
     "minifyHtml": {
       "collapseWhitespace": false,
@@ -56,7 +57,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "snapshot": "react-snapshot",
     "postbuild": "react-snap",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

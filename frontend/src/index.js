@@ -61,7 +61,6 @@ const generateClassName = createGenerateClassName({
     seed: '350',
 });
 
-const sheets = new ServerStyleSheets();
 
 const app = (
     <StylesProvider generateClassName={generateClassName}>
@@ -73,27 +72,11 @@ const app = (
     </StylesProvider>
 );
 
-const addStyle = (() => {
-    const style = document.createElement('style');
-    document.head.append(style);
-    return (styleString) => style.textContent = styleString;
-})();
-
 const rootElement = document.getElementById("root");
 if (rootElement.hasChildNodes()) {
-    console.log("hydrate");
-    //render(app, rootElement);
+    render(app, rootElement); // Kinda dirty, but hey, bots can read meta!
 } else {
-
-    if (navigator.userAgent !== 'ReactSnap'){
-        sheets.collect(app);
-        const html = ReactDOMServer.renderToStaticMarkup(sheets.collect(app));
-        addStyle(sheets.toString());
-        rootElement.innerHTML = html;
-        console.log('window')
-    } else {
-        render(app, rootElement);
-    }
+    render(app, rootElement);
 }
 
 // If you want your app to work offline and load faster, you can change

@@ -8,7 +8,7 @@ import "../../article.css";
 
 export function MarkdownPage({src, title, description}){
     const [content, setContent] = useState('');
-
+    console.log(description);
     useEffect(() => {
         axios.get(src)
             .then(
