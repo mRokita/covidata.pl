@@ -32,7 +32,6 @@
     "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
     "puppeteerExecutablePath": "/usr/bin/chromium-browser",
     "puppeteer": {
-      "waitUntil": "networkidle0"
     },
     "include": [
       "/maps/global/Czad",
