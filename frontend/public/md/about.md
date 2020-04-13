@@ -21,13 +21,19 @@ Dane wykorzystywane przez [covidata.pl](https://covidata.pl) pochodzą z dwóch 
 
 ![](https://avatars1.githubusercontent.com/u/10209201?s=460&u=d430f3340dd632e65a517b2cf8e687c364845816&v=4)
 
-Student Informatyki na [EiTI PW](http://elka.pw.edu.pl), muzyk-amator, software developer od czasów piaskownicy.
+Student informatyki na [EiTI PW](http://elka.pw.edu.pl), muzyk-amator, software developer od czasów piaskownicy.
 Absolwent [XIV LO im. Stanisława Staszica w Warszawie](https://staszic.waw.pl).
 
 Główny twórca covidata.pl, dział techniczny.
 
 [WWW](https://mrokita.pl) | [E-mail](mailto:covidata@mrokita.pl) | [GitHub](https://github.com/mRokita/) | [Telegram](https://t.me/mrokita)
 
+
+## Alexander Golys
+
+Student informatyki na [EiTI PW](http://elka.pw.edu.pl) oraz kognitywistyki na [Uniwersytecie Warszawskim](https://uw.edu.pl). 
+
+Odpowiedzialny za opracowania i analizę danych. 
 
 # Kontakt
 

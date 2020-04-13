@@ -33,9 +33,7 @@ import List from "@material-ui/core/List";
 import Maps from "./components/Maps";
 import {Helmet} from "react-helmet";
 import ReactGA from "react-ga";
-import {About} from "./components/About";
-
-
+import {MarkdownPage} from "./components/common/MarkdownPage";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,8 +51,7 @@ function Nav() {
     const classes = useStyles();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const history = useHistory();
-    const clickHandler = (url) => () => {
-        history.push(url);
+    const clickHandler = () => {
         setDrawerOpen(false);
     };
     return <React.Fragment>
@@ -101,15 +98,31 @@ function Nav() {
                                                                                        paddingTop: 70
                                                                                    }}>covidata</Typography></div>
                 <List style={{width: 250}}>
-                    <ListItem button onClick={clickHandler("/stats")}>
+                    <ListItem component={Link} to={"/stats"} onClick={clickHandler} button>
                         <ListItemIcon><EqualizerIcon/></ListItemIcon>
                         <ListItemText primary="Statystyki"/>
                     </ListItem>
-                    <ListItem button onClick={clickHandler("/maps")}>
+                    <ListItem component={Link} to={"/maps"} button onClick={clickHandler}>
                         <ListItemIcon><MapIcon/></ListItemIcon>
                         <ListItemText primary="Mapa"/>
                     </ListItem>
-                    <ListItem button onClick={clickHandler("/about")}>
+                    <ListItem component={Link} to={"/podstawowe-informacje"} button onClick={clickHandler}>
+                        <ListItemIcon><InfoIcon/></ListItemIcon>
+                        <ListItemText primary="Podstawowe informacje o wirusie"/>
+                    </ListItem>
+                    <ListItem component={Link} to={"/symptomy"} button onClick={clickHandler}>
+                        <ListItemIcon><InfoIcon/></ListItemIcon>
+                        <ListItemText primary="Symptomy"/>
+                    </ListItem>
+                    <ListItem component={Link} to={"/zagrozenie-i-smiertelnosc"} button onClick={clickHandler}>
+                        <ListItemIcon><InfoIcon/></ListItemIcon>
+                        <ListItemText primary="Zagrożenie i śmiertelnosć"/>
+                    </ListItem>
+                    <ListItem component={Link} to={"/mity"} button onClick={clickHandler}>
+                        <ListItemIcon><InfoIcon/></ListItemIcon>
+                        <ListItemText primary="Fakty, mity, ciekawostki"/>
+                    </ListItem>
+                    <ListItem  component={Link} to={"/about"} button onClick={clickHandler}>
                         <ListItemIcon><InfoIcon/></ListItemIcon>
                         <ListItemText primary="O nas"/>
                     </ListItem>
@@ -120,9 +133,12 @@ function Nav() {
 }
 
 const history = createHistory();
-history.listen((location, action) => {
-    ReactGA.pageview(window.location.pathname);
-});
+
+if (navigator.userAgent !== 'ReactSnap'){
+    history.listen((location, action) => {
+        ReactGA.pageview(window.location.pathname)
+    });
+}
 
 function App() {
     return (
@@ -148,7 +164,11 @@ function App() {
                 <Route exact path="/maps/">
                     <Redirect to="/maps/local"/>
                 </Route>
-                <Route exact path={"/about"} render={() => <About/>} />
+                <Route exact path={"/about"} render={() => <MarkdownPage src={"/md/about.md"}/>} />
+                <Route exact path={"/mity"} render={() => <MarkdownPage src={"/md/mity.md"}/>} />
+                <Route exact path={"/zagrozenie-i-smiertelnosc"} render={() => <MarkdownPage src={"/md/zagrozenie-i-smiertelnosc.md"}/>} />
+                <Route exact path={"/symptomy"} render={() => <MarkdownPage src={"/md/symptomy.md"}/>} />
+                <Route exact path={"/podstawowe-informacje"} render={() => <MarkdownPage src={"/md/podstawowe-informacje.md"}/>} />
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
                 <Route path="/stats/:reportType" render={() => <Stats/>}/>
                 <Route exact path="/404" component={Http404}/>

@@ -4,16 +4,16 @@ import axios from "axios";
 import Paper from "@material-ui/core/Paper";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import "../article.css";
+import "../../article.css";
 
-export function About() {
+export function MarkdownPage({src}){
     const [content, setContent] = useState('');
     useEffect(() => {
-        axios.get("/md/about.md")
+        axios.get(src)
             .then(
                 (response) => setContent(response.data)
             )
-    }, []);
+    }, [src]);
     return <React.Fragment>
         <Container component={Paper} style={{padding: 20}}>
             <ReactMarkdown

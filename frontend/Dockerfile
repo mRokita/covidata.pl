@@ -1,14 +1,17 @@
 # base image
-FROM node:12.2.0-alpine AS react-build
+FROM zenika/alpine-chrome:77-with-node-10 AS react-build
+USER root
+RUN mkdir /app
 WORKDIR /app
 
+# Installs the latest Chromium (64) package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm install
 COPY ./public ./public
 COPY ./src ./src
 RUN npm run build
-RUN npm run snapshot
 
 # Stage 2 - the production environment
 FROM nginx:alpine

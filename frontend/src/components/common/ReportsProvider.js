@@ -22,7 +22,7 @@ function loadReports(dispatch, type) {
                 })
             );
             dispatch(setReports(type, reports));
-        });
+        }).catch((err) => {console.log(err);});
 }
 
 

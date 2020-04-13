@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import ReactGA from 'react-ga';
-import { render } from 'react-snapshot';
+import { hydrate, render } from 'react-dom';
 import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
 const HOST = window.location.hostname;
@@ -20,8 +20,10 @@ if (HOST === 'covidata.localhost') {
     api_url = 'https://covidata.pl/api/v1/';
 }
 
-ReactGA.initialize('UA-163403425-1', {debug: debug_url === api_url});
-ReactGA.pageview(window.location.pathname);
+if (navigator.userAgent !== 'ReactSnap'){
+    ReactGA.initialize('UA-163403425-1', {debug: debug_url === api_url});
+    ReactGA.pageview(window.location.pathname);
+}
 
 export const API_URL = api_url;
 const theme = createMuiTheme({
@@ -50,17 +52,23 @@ const theme = createMuiTheme({
     },
 });
 
-render(
+
+const app = (
     <React.StrictMode>
         <Provider store={store}>
             <ThemeProvider theme={theme}>
                 <App/>
             </ThemeProvider>
         </Provider>
-    </React.StrictMode>,
-    document.getElementById('root')
+    </React.StrictMode>
 );
 
+const rootElement = document.getElementById("root");
+if (rootElement.hasChildNodes()) {
+    hydrate(app, rootElement);
+} else {
+    render(app, rootElement);
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
