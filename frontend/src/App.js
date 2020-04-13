@@ -41,7 +41,7 @@ function App() {
                 <meta charSet="utf-8"/>
                 <meta lang="pl"/>
                 <meta property="og:type" content="website"/>
-                
+
                 <meta property="og:url" content={`covidata.pl${url}`}/>
                 <meta property="og:image" content={`http://covidata.pl${url}.png`}/>
 

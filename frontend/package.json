@@ -36,9 +36,15 @@
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage"
     ],
+    "puppeteerExecutablePath": "/usr/bin/chromium-browser",
     "puppeteer": {
       "waitUntil": "networkidle0"
     },
+    "viewport": {
+      "width": 1200,
+      "height": 628
+    },
+    "port": 5000,
     "include": [
       "/maps/local",
       "/maps/global",
@@ -46,6 +52,7 @@
       "/stats/global",
       "/about",
       "/zagrozenie-i-smiertelnosc",
+      "/symptomy",
       "/mity",
       "/podstawowe-informacje"
     ],
