@@ -29,10 +29,13 @@
   },
   "reactSnap": {
     "source": "build",
-    "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage"
+    ],
     "puppeteerExecutablePath": "/usr/bin/chromium-browser",
-    "puppeteer": {
-    },
+    "puppeteer":  { "waitUntil": "load" },
     "include": [
       "/maps/global/Czad",
       "/stats/global/Czad",
