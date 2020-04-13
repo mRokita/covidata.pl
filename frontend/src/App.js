@@ -91,12 +91,15 @@ function Nav() {
             onOpen={() => setDrawerOpen(true)}>
             <div role="presentation"
                  style={{width: 250}}>
-                <div style={{backgroundColor: blue[500], height: 160}}><Typography variant={"h2"} align={"center"}
-                                                                                   style={{
-                                                                                       color: 'white',
-                                                                                       height: 160,
-                                                                                       paddingTop: 70
-                                                                                   }}>covidata</Typography></div>
+                <div style={{backgroundColor: "#eee", height: 160}}>
+                    <Typography variant={"h2"} align={"center"}
+                                style={{
+                                    color: blue[500],
+                                    height: 160,
+                                    paddingTop: 70
+                                }}>covidata
+                    </Typography>
+                </div>
                 <List style={{width: 250}}>
                     <ListItem component={Link} to={"/stats"} onClick={clickHandler} button>
                         <ListItemIcon><EqualizerIcon/></ListItemIcon>
@@ -122,7 +125,7 @@ function Nav() {
                         <ListItemIcon><InfoIcon/></ListItemIcon>
                         <ListItemText primary="Fakty, mity, ciekawostki"/>
                     </ListItem>
-                    <ListItem  component={Link} to={"/about"} button onClick={clickHandler}>
+                    <ListItem component={Link} to={"/about"} button onClick={clickHandler}>
                         <ListItemIcon><InfoIcon/></ListItemIcon>
                         <ListItemText primary="O nas"/>
                     </ListItem>
@@ -134,7 +137,7 @@ function Nav() {
 
 const history = createHistory();
 
-if (navigator.userAgent !== 'ReactSnap'){
+if (navigator.userAgent !== 'ReactSnap') {
     history.listen((location, action) => {
         ReactGA.pageview(window.location.pathname)
     });
@@ -144,16 +147,16 @@ function App() {
     return (
         <Router history={history}>
             <CssBaseline/>
-            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"} defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
+            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"}
+                    defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
                 <meta name="keywords"
                       content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
                 <meta name="description" content=""/>
                 <link rel="canonical" href="https://covidata.pl"/>
                 <meta charSet="utf-8"/>
-                <meta lang="pl" />
+                <meta lang="pl"/>
             </Helmet>
             <Nav/>
-            <div style={{marginBottom: 80}}/>
             <Switch>
                 <Route exact path="/">
                     <Redirect to="/maps"/>
@@ -164,11 +167,17 @@ function App() {
                 <Route exact path="/maps/">
                     <Redirect to="/maps/local"/>
                 </Route>
-                <Route exact path={"/about"} render={() => <MarkdownPage src={"/md/about.md"} title={"O nas"}/>} />
-                <Route exact path={"/mity"} render={() => <MarkdownPage src={"/md/mity.md"} title={"Fakty, mity, ciekawostki"}/>} />
-                <Route exact path={"/zagrozenie-i-smiertelnosc"} render={() => <MarkdownPage src={"/md/zagrozenie-i-smiertelnosc.md"} title={"Zagrożenie i śmiertelność"}/>} />
-                <Route exact path={"/symptomy"} render={() => <MarkdownPage src={"/md/symptomy.md"} title={"Symptomy COVID-19"}/>} />
-                <Route exact path={"/podstawowe-informacje"} render={() => <MarkdownPage src={"/md/podstawowe-informacje.md"} title={"Podstawowe informacje"}/>} />
+                <Route exact path={"/about"} render={() => <MarkdownPage src={"/md/about.md"} title={"O nas"}/>}/>
+                <Route exact path={"/mity"}
+                       render={() => <MarkdownPage src={"/md/mity.md"} title={"Fakty, mity, ciekawostki"}/>}/>
+                <Route exact path={"/zagrozenie-i-smiertelnosc"}
+                       render={() => <MarkdownPage src={"/md/zagrozenie-i-smiertelnosc.md"}
+                                                   title={"Zagrożenie i śmiertelność"}/>}/>
+                <Route exact path={"/symptomy"}
+                       render={() => <MarkdownPage src={"/md/symptomy.md"} title={"Symptomy COVID-19"}/>}/>
+                <Route exact path={"/podstawowe-informacje"}
+                       render={() => <MarkdownPage src={"/md/podstawowe-informacje.md"}
+                                                   title={"Podstawowe informacje"}/>}/>
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
                 <Route path="/stats/:reportType" render={() => <Stats/>}/>
                 <Route exact path="/404" component={Http404}/>

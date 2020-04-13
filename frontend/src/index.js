@@ -6,14 +6,17 @@ import {Provider} from "react-redux";
 import store from "./redux/store";
 import ReactGA from 'react-ga';
 import { hydrate, render } from 'react-dom';
-import {createMuiTheme, ThemeProvider} from "@material-ui/core/styles";
+import {createMuiTheme, ThemeProvider, StylesProvider} from "@material-ui/core/styles";
 import blue from "@material-ui/core/colors/blue";
+import {createGenerateClassName} from "@material-ui/styles";
+import ServerStyleSheets from "@material-ui/styles/ServerStyleSheets";
+import ReactDOMServer from 'react-dom/server';
 const HOST = window.location.hostname;
 let debug_url = 'http://192.168.1.14:8000/api/v1/';
 let api_url = `${debug_url}`;
 
-if (navigator.userAgent !== 'ReactSnap'){
-    api_url = 'https://covidata.pl'
+if (navigator.userAgent === 'ReactSnap'){
+    api_url = 'https://covidata.pl/api/v1/'
 } else if (HOST === 'covidata.localhost') {
     api_url = 'http://covidata.localhost/api/v1/';
 } else if (HOST === 'frontend') {
@@ -54,22 +57,43 @@ const theme = createMuiTheme({
     },
 });
 
+const generateClassName = createGenerateClassName({
+    seed: '350',
+});
+
+const sheets = new ServerStyleSheets();
 
 const app = (
-    <React.StrictMode>
+    <StylesProvider generateClassName={generateClassName}>
         <Provider store={store}>
             <ThemeProvider theme={theme}>
                 <App/>
             </ThemeProvider>
         </Provider>
-    </React.StrictMode>
+    </StylesProvider>
 );
+
+const addStyle = (() => {
+    const style = document.createElement('style');
+    document.head.append(style);
+    return (styleString) => style.textContent = styleString;
+})();
 
 const rootElement = document.getElementById("root");
 if (rootElement.hasChildNodes()) {
-    hydrate(app, rootElement);
+    console.log("hydrate");
+    //render(app, rootElement);
 } else {
-    render(app, rootElement);
+
+    if (navigator.userAgent !== 'ReactSnap'){
+        sheets.collect(app);
+        const html = ReactDOMServer.renderToStaticMarkup(sheets.collect(app));
+        addStyle(sheets.toString());
+        rootElement.innerHTML = html;
+        console.log('window')
+    } else {
+        render(app, rootElement);
+    }
 }
 
 // If you want your app to work offline and load faster, you can change
