@@ -7,7 +7,7 @@ import blue from "@material-ui/core/colors/blue";
 import createHistory from 'history/createBrowserHistory';
 
 
-import {Link, Redirect, Route, Router, Switch} from "react-router-dom";
+import {Link, Redirect, Route, Router, Switch, useRouteMatch} from "react-router-dom";
 import {Http404} from "./components/Http404";
 import Maps from "./components/Maps";
 import {Helmet} from "react-helmet";
@@ -27,6 +27,9 @@ if (navigator.userAgent !== 'ReactSnap') {
 }
 
 function App() {
+    let url = window.location.pathname;
+    let description = document.querySelector('meta[name="description"]').content;
+    url = url === '/' ? '/index' : url;
     return (
         <Router history={history}>
             <CssBaseline/>
@@ -34,9 +37,17 @@ function App() {
                     defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
                 <meta name="keywords"
                       content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
-                <link rel="canonical" href="https://covidata.pl"/>
+                <link rel="canonical" href={`https://covidata.pl/${url}`}/>
                 <meta charSet="utf-8"/>
                 <meta lang="pl"/>
+                <meta property="og:type" content="website"/>
+                
+                <meta property="og:url" content={`covidata.pl${url}`}/>
+                <meta property="og:image" content={`http://covidata.pl${url}.png`}/>
+
+                <meta property="twitter:card" content="summary_large_image"/>
+                <meta property="twitter:url" content={`covidata.pl${url}`}/>
+                <meta property="twitter:image" content={`https://covidata.pl${url}.png`}/>
             </Helmet>
             <Nav/>
             <Switch>

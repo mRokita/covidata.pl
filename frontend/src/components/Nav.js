@@ -48,28 +48,7 @@ export function Nav() {
                 <Typography variant="h6" className={classes.title}>
                     <Link to="/" className={classes.title}>covidata.pl</Link>
                 </Typography>
-                <a href={"https://pw.edu.pl"}>
-                    <Avatar src="/wut.png"
-                            imgProps={{
-                                "style": {
-                                    objectFit: 'contain',
-                                    height: '34px',
-                                    transform: 'rotate(90deg)'
-                                }
-                            }}
-                            variant="square"/>
-                </a>
-                <a href={"http://elka.pw.edu.pl"}>
-                    <Avatar src="/weiti.png"
-                            imgProps={{
-                                "style": {
-                                    objectFit: 'contain',
-                                    height: '30px',
-                                    paddingTop: 2
-                                }
-                            }}
-                            variant="square"/>
-                </a>
+
             </Toolbar>
         </AppBar>
         <SwipeableDrawer
