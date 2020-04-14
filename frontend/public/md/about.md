@@ -34,8 +34,6 @@ Główny twórca części merytorycznej. Odpowiedzialny za gromadzenie, analizę
 
 [GitHub](https://github.com/AlexanderGolys)
 
-[GitHub](https://github.com/AlexanderGolys)
-
 # Kontakt
 
 E-mail: [covidata@mrokita.pl](mailto:mrokita@mrokita.pl)
