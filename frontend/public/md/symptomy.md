@@ -1,6 +1,6 @@
 # Przeciwdziałanie i symptomy
 
-Najczęstsze symptomy COVID-19:
+Najczęstsze symptomy COVID-19 prezentują się następująco:
 
 * Gorączka (prawie 87%)
 * Suchy kaszel (67)%
@@ -17,17 +17,23 @@ Jednym ostatnio wykrytych charakterystycznych objawów choroby jest **utrata wę
 
 Co warte zauważenia, COVID-19 zdaje się nie wywoływać kataru. 
 
-81% osób chorobę przechodzi bez objawów lub z lekkimi objawami (przeziębienia, grypy)
-14% chorobę przechodzi ciężko (problemy z oddychaniem, niedotlenienie)
-5% jest w stanie krytycznym, zagrażającym życiu
+* **81%** chorobę przechodzi bez objawów lub z lekkimi objawami (przeziębienia, grypy)
 
-Badania wykazują również, że chorobę da się przechodzić bezobjawowo, a liczbę takich przypadków estymuje się na około 18%. Osoba taka, mimo braku objawów, nadal może rozprzestrzeniać chorobę. 
+* **14%** chorobę przechodzi ciężko (problemy z oddychaniem, niedotlenienie)
+* **5%** jest w stanie krytycznym, zagrażającym życiu
 
-Okres inkubacji choroby trwa zazwyczaj 2-14 dni (w 97% przypadków nie przekracza 12 dni). Średnio jest to 5 dni, a miediana wypada w 3 dniach. Najdłuższy zaobserwowany okres inkubacji wynosił 27 dni. 
+Badania wykazują również, że chorobę da się przechodzić bezobjawowo, a liczbę takich przypadków estymuje się na około 18%. Osoba taka, mimo braku objawów, może dalej rozprzestrzeniać chorobę. 
 
+### Okres inkubacji
+Okres inkubacji choroby trwa zazwyczaj 2-14 dni (w 97% przypadków nie przekracza 12 dni). Średnio jest to 5 dni, a mediana wypada w 3 dniach. Najdłuższy zaobserwowany okres inkubacji wynosił 27 dni. 
+
+### Czas trwania choroby
 Choroba trwa w łagodnych przypadkach około 2 tygodni, w przypadkach cięższych 3-6 tygodni.
 
-Wiele zespołów badawczych pracuje aktualnie nad szczepionką. Zostały rozpoczęte już fazy testów na zwierzętach, a rozpoczęcie testów na ludziach przewiduje się na następne kilka tygodni. Jednak przewidywany czas potrzebny do wypuszczenia szczepionki do powszechnego obiegu to 12-18 miesięcy.
+### Szczepionki
+Wiele zespołów badawczych pracuje aktualnie nad szczepionką. Zostały rozpoczęte już fazy testów na zwierzętach, a rozpoczęcie testów na ludziach przewiduje się na następne kilka tygodni. Jednak przewidywany czas potrzebny do wypuszczenia szczepionki do powszechnego obiegu to 12-18 miesięcy. Nic również nie wskazuje na to, by skuteczne okazały się jakiekolwiek szczepionki obecnie dostępne na rynku (choć nie jest to całkowicie wykluczone).
+
+*Autor: Alexander Golys*
 
 
 
