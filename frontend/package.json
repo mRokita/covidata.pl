@@ -39,11 +39,7 @@
     "puppeteer": {
       "waitUntil": "networkidle0"
     },
-    "viewport": {
-      "width": 1200,
-      "height": 628
-    },
-    "port": 5000,
+    "port": 3000,
     "include": [
       "/maps/local",
       "/maps/global",
