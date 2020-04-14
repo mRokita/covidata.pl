@@ -17,8 +17,17 @@ before_script:
 
 build:
   stage: build
+  image: docker:latest
+  before_script:
+    - docker info
+    - apk update
+    - apk upgrade
+    - apk add python python-dev py-pip build-base
+    - pip install docker-compose
+  services:
+    - docker:dind
   tags:
-    - private-shell
+    - docker
   script:
     - export IMAGE_TAG=$CI_BUILD_REF_NAME
     - docker-compose build
