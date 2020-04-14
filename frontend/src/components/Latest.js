@@ -8,10 +8,10 @@ import {Redirect} from "react-router-dom";
 import LatestTable from "./LatestTable";
 import {reportTypeSettings} from "../config";
 import {Helmet} from "react-helmet";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
 import Fab from "@material-ui/core/Fab";
 import {useHistory} from "react-router-dom";
 import MapIcon from '@material-ui/icons/Map';
+import Container from "@material-ui/core/Container";
 
 const LatestChartsAlert = (props) => {
     const reportsLoaded = useSelector(state => state[props.reducerKey].reportsLoaded);
@@ -31,7 +31,7 @@ export const Latest = React.memo(function Latest({reportType}){
     if(!reportTypeSettings.hasOwnProperty(reportType)) return <Redirect to="/404" />;
     const settings = reportTypeSettings[reportType];
     return (
-        <React.Fragment>
+        <Container component={Paper} style={{paddingTop: '20px', marginBottom: 20, paddingBottom: '20px'}}>
             <Helmet>
                 <title>Statystyki</title>
             </Helmet>
@@ -46,6 +46,6 @@ export const Latest = React.memo(function Latest({reportType}){
                  color="primary" alt="Przejdź do mapy">
                 <MapIcon />
             </Fab>
-        </React.Fragment>
+        </Container>
     )
 });
