@@ -42,7 +42,7 @@ build_api:
     - export IMAGE_TAG=$CI_BUILD_REF_NAME
     - docker-compose build api
     - docker-compose push api
-    - 
+
 build_crawler:
   stage: build
   tags:
