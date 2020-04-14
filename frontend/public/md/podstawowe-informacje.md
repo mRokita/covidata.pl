@@ -1,4 +1,4 @@
-# Podstawowe informacje o wirusie 
+# Podstawowe informacje o pandemii 
 ### Terminologia
 Dla wielu ludzi wciąż jest to kwestia niejasna, a niepoprawnie używane terminy w mediach nie pomagają się odnaleźć w tym terminologicznym bałaganie. 
 Sprawa jest jednak prosta:
