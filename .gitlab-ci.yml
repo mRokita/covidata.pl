@@ -18,13 +18,13 @@ before_script:
 build_frontend:
   cache:
     key: ${CI_COMMIT_REF_SLUG}
+  only:
+    - master
   stage: build
-  image: docker:latest
+  image: docker/compose:alpine-1.25.5
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker info
-    - apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install docker-compose
   services:
     - docker:dind
   tags:
@@ -45,6 +45,8 @@ build_api:
 
 build_crawler:
   stage: build
+  only:
+    - master
   tags:
     - private-shell
   script:
