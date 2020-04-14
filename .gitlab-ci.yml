@@ -30,8 +30,8 @@ build:
     - docker
   script:
     - export IMAGE_TAG=$CI_BUILD_REF_NAME
-    - docker-compose build
-    - docker-compose push
+    - /usr/local/bin/docker-compose build
+    - /usr/local/bin/docker-compose push
 test-api:
   stage: test
   tags:

@@ -28,7 +28,7 @@ if (navigator.userAgent !== 'ReactSnap') {
 
 function App() {
     let url = window.location.pathname;
-    url = url === '/' ? '/index' : url;
+    let imageUrl = url === '/' ? '/index' : url;
     return (
         <Router history={history}>
             <CssBaseline/>
@@ -41,14 +41,14 @@ function App() {
                 <meta lang="pl"/>
                 <meta property="og:type" content="website"/>
 
-                <meta property="og:url" content={`covidata.pl${url}`}/>
-                <meta property="og:image" content={`http://covidata.pl${url}.png`}/>
+                <meta property="og:url" content={`https://covidata.pl${url}`}/>
+                <meta property="og:image" content={`http://covidata.pl${imageUrl}.png`}/>
                 <meta property="og:image:width" content="1200"/>
                 <meta property="og:image:height" content="628"/>
 
                 <meta property="twitter:card" content="summary_large_image"/>
-                <meta property="twitter:url" content={`covidata.pl${url}`}/>
-                <meta property="twitter:image" content={`https://covidata.pl${url}.png`}/>
+                <meta property="twitter:url" content={`https://covidata.pl${url}`}/>
+                <meta property="twitter:image" content={`https://covidata.pl${imageUrl}.png`}/>
             </Helmet>
             <Nav/>
             <Switch>
