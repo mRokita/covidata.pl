@@ -24,12 +24,14 @@ Główny twórca covidata.pl, dział techniczny.
 [WWW](https://mrokita.pl) | [E-mail](mailto:covidata@mrokita.pl) | [GitHub](https://github.com/mRokita/) | [Telegram](https://t.me/mrokita)
 
 
-## Alexander Golys
+## Alexander Golys 
 ![Alexander Golys](https://avatars0.githubusercontent.com/u/45974807?s=460&u=3ab4fe9943fdd103d6acf6b795903d7217493c2b&v=4)
 
 Student informatyki na Politechnice Warszawskiej oraz kognitywistyki na Uniwersytecie Warszawskim. 
 
-Odpowiedzialny za gromadzenie, analizę i opis danych. Autor większości artykułów.
+Główny twórca części merytorycznej. Odpowiedzialny za gromadzenie, analizę i opis danych, autor wszystkich artykułów. 
+
+[GitHub](https://github.com/AlexanderGolys)
 
 # Kontakt
 
