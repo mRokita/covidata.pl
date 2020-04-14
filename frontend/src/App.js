@@ -36,13 +36,15 @@ function App() {
                     defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
                 <meta name="keywords"
                       content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
-                <link rel="canonical" href={`https://covidata.pl/${url}`}/>
+                <link rel="canonical" href={`https://covidata.pl${url}`}/>
                 <meta charSet="utf-8"/>
                 <meta lang="pl"/>
                 <meta property="og:type" content="website"/>
 
                 <meta property="og:url" content={`covidata.pl${url}`}/>
                 <meta property="og:image" content={`http://covidata.pl${url}.png`}/>
+                <meta property="og:image:width" content="1200"/>
+                <meta property="og:image:height" content="628"/>
 
                 <meta property="twitter:card" content="summary_large_image"/>
                 <meta property="twitter:url" content={`covidata.pl${url}`}/>

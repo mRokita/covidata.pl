@@ -50,16 +50,6 @@ export default function ReportsProvider({ urlPrefix, modalComponent, children })
             <div style={{height: '50px'}}>&nbsp;</div>
             <Box boxShadow={5} style={{position: 'fixed', bottom: 0, width: '100%'}}>
                 <BottomNavigation
-
-
-
-
-
-
-
-
-
-
                     showLabels
                     onChange={(event, newValue) => {
                         if(reportType !== newValue) dispatch(clearReports(reportType));
