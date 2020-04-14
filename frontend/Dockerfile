@@ -7,7 +7,7 @@ WORKDIR /app
 # Installs the latest Chromium (64) package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 COPY ./package.json ./
-COPY ./package-lock.json ./
+
 RUN yarn install
 COPY ./public ./public
 COPY ./src ./src
