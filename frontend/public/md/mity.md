@@ -11,8 +11,8 @@ Nie wykryto dotąd przypadku, w którym zwierzę domowe zaraziło człowieka SAR
 ### 3. Ludzie nie zarazili się COVID-19 przez niedogotowaną zupę z nietoperza
 Historia ta jest prawdopodobnie zmyślona. Badania genetyczne wskazują, że człowiek nie zaraził się tą chorobą od nietoperza, a od łuskowca (który to zaraził się od nietoperza). Nic nie wskazuje również, by łuskowce przyrządzały zupy z nietoperzy.
 
-### 4. Rekord zarażeń należy do kobiety z Korei Południowej, zwanej Pacjentem 31, która zainfekowała ok. 1200 osób 
-Nie zastosowała się ona do rządowych zaleceń i regularnie uczęszczała na msze podczas choroby.
+### 4. Antybiotyki nie są skuteczne w leczeniu COVID-19
+Antybiotyki skutecznie radzą sobie z infekcjami bakteryjnymi, nie wirusowymi.
 
 ### 5. SARS-CoV-2 utrzymuje się na powierzchniach do kilku dni
 Powierzchnie plastikowe i stalowe utrzymują wirusa do 3 dni, papierowe około jednego dnia, a miedziane - do 4 dni. W skrajnych przypadkach może on pozostać na płaskiej powierzchni aż do 9 dni
@@ -23,8 +23,7 @@ Powierzchnie plastikowe i stalowe utrzymują wirusa do 3 dni, papierowe około j
 ### 7. SARS-CoV-2 nie jest bronią biologiczną
 Podobne koronawirusy występowały powszechnie u ptaków i ssaków, szczególnie nietoperzy. Prawdopodobnie zaraziliśmy się tym wirusem przez targ zwierząt w Wuhan, gdzie jego cząsteczki mogły swobodnie przemieszczać się między gatunkami, które normalnie nie mają ze sobą styczności, co przyspieszyło mutację. 
 
-### 8. Antybiotyki nie są skuteczne w leczeniu COVID-19
-Antybiotyki skutecznie radzą sobie z infekcjami bakteryjnymi, nie wirusowymi.
+
 
 
 
