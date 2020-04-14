@@ -16,6 +16,8 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
 build:
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
   stage: build
   image: docker:latest
   before_script:
@@ -28,8 +30,8 @@ build:
     - docker
   script:
     - export IMAGE_TAG=$CI_BUILD_REF_NAME
-    - /usr/local/bin/docker-compose build
-    - /usr/local/bin/docker-compose push
+    - docker-compose build
+    - docker-compose push
 test-api:
   stage: test
   tags:

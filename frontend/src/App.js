@@ -7,7 +7,15 @@ import blue from "@material-ui/core/colors/blue";
 import createHistory from 'history/createBrowserHistory';
 
 
-import {Link, Redirect, Route, Router, Switch, useRouteMatch} from "react-router-dom";
+import {
+    Link,
+    Redirect,
+    Route,
+    Router,
+    Switch,
+    useLocation,
+    useRouteMatch
+} from "react-router-dom";
 import {Http404} from "./components/Http404";
 import Maps from "./components/Maps";
 import {Helmet} from "react-helmet";
@@ -26,30 +34,40 @@ if (navigator.userAgent !== 'ReactSnap') {
     });
 }
 
-function App() {
-    let url = window.location.pathname;
+function Meta() {
+    let location = useLocation();
+    let url = location.pathname;
     let imageUrl = url === '/' ? '/index' : url;
+    return (
+        <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"}
+                defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
+            <meta name="keywords"
+                  content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
+            <link rel="canonical" href={`https://covidata.pl${url}`}/>
+            <meta charSet="utf-8"/>
+            <meta lang="pl"/>
+            <meta property="og:type" content="website"/>
+
+            <meta property="og:url" content={`https://covidata.pl${url}`}/>
+            <meta property="og:image"
+                  content={`http://covidata.pl${imageUrl}.png`}/>
+            <meta property="og:image:width" content="1200"/>
+            <meta property="og:image:height" content="628"/>
+
+            <meta property="twitter:card" content="summary_large_image"/>
+            <meta property="twitter:url"
+                  content={`https://covidata.pl${url}`}/>
+            <meta property="twitter:image"
+                  content={`https://covidata.pl${imageUrl}.png`}/>
+        </Helmet>
+    )
+}
+
+function App() {
     return (
         <Router history={history}>
             <CssBaseline/>
-            <Helmet titleTemplate={"%s | covidata.pl - Koronawirus. Rzetelnie"}
-                    defaultTitle={"covidata.pl - Koronawirus. Rzetelnie"}>
-                <meta name="keywords"
-                      content="covid,covid19,polska,koronawirus,covidata,maseczki,statystyki,dane,mapy,mapa,wykresy,wykres,zachorowania,wyzdrowienia"/>
-                <link rel="canonical" href={`https://covidata.pl${url}`}/>
-                <meta charSet="utf-8"/>
-                <meta lang="pl"/>
-                <meta property="og:type" content="website"/>
-
-                <meta property="og:url" content={`https://covidata.pl${url}`}/>
-                <meta property="og:image" content={`http://covidata.pl${imageUrl}.png`}/>
-                <meta property="og:image:width" content="1200"/>
-                <meta property="og:image:height" content="628"/>
-
-                <meta property="twitter:card" content="summary_large_image"/>
-                <meta property="twitter:url" content={`https://covidata.pl${url}`}/>
-                <meta property="twitter:image" content={`https://covidata.pl${imageUrl}.png`}/>
-            </Helmet>
+            <Meta/>
             <Nav/>
             <Switch>
                 <Route exact path="/">
@@ -63,7 +81,10 @@ function App() {
                 </Route>
                 {staticSites.map(
                     ({url, title, description, source}) =>
-                        <Route exact key={url} path={url} render={() => <MarkdownPage src={source} description={description} title={title}/>}/>
+                        <Route exact key={url} path={url}
+                               render={() => <MarkdownPage src={source}
+                                                           description={description}
+                                                           title={title}/>}/>
                 )
                 }
                 <Route path="/maps/:reportType" render={() => <Maps/>}/>
