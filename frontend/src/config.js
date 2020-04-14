@@ -4,6 +4,9 @@ import BarChart from "recharts/lib/chart/BarChart";
 import Bar from "recharts/lib/cartesian/Bar";
 import AreaChart from "recharts/lib/chart/AreaChart";
 import Area from "recharts/lib/cartesian/Area";
+import purple from "@material-ui/core/colors/purple";
+import grey from "@material-ui/core/colors/grey";
+import green from "@material-ui/core/colors/green";
 
 
 
@@ -46,9 +49,9 @@ const globalSettings = {
         },
     ],
     columns: [
-        {name: "Zachorowania", dataKey: "total_cases"},
-        {name: "Zgony", dataKey: "total_deaths"},
-        {name: "Wyzdrowienia", dataKey: "total_recoveries"},
+        {name: "Zachorowania", dataKey: "total_cases", color: purple[500]},
+        {name: "Zgony", dataKey: "total_deaths", color: '#333'},
+        {name: "Wyzdrowienia", dataKey: "total_recoveries", color: green[500]},
     ]
 };
 
@@ -84,8 +87,8 @@ const localSettings = {
         },
     ],
     columns: [
-        {name: "Zachorowania", dataKey: "total_cases"},
-        {name: "Zgony", dataKey: "total_deaths"},
+        {name: "Zachorowania", dataKey: "total_cases", color: purple[500]},
+        {name: "Zgony", dataKey: "total_deaths", color: '#333'},
     ]
 };
 
