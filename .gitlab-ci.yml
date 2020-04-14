@@ -20,7 +20,7 @@ build_frontend:
     key: ${CI_COMMIT_REF_SLUG}
   stage: build
   image: docker:latest
-  before_script
+  before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker info
     - apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
