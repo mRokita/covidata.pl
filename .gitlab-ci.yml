@@ -15,12 +15,13 @@ variables:
 before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
 
-build:
+build_frontend:
   cache:
     key: ${CI_COMMIT_REF_SLUG}
   stage: build
   image: docker:latest
-  before_script:
+  before_script
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
     - docker info
     - apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
     - pip install docker-compose
@@ -30,8 +31,26 @@ build:
     - docker
   script:
     - export IMAGE_TAG=$CI_BUILD_REF_NAME
-    - docker-compose build
-    - docker-compose push
+    - docker-compose build frontend
+    - docker-compose push frontend
+
+build_api:
+  stage: build
+  tags:
+    - private-shell
+  script:
+    - export IMAGE_TAG=$CI_BUILD_REF_NAME
+    - docker-compose build api
+    - docker-compose push api
+    - 
+build_crawler:
+  stage: build
+  tags:
+    - private-shell
+  script:
+    - export IMAGE_TAG=$CI_BUILD_REF_NAME
+    - docker-compose build crawler
+    - docker-compose push crawler
 test-api:
   stage: test
   tags:
