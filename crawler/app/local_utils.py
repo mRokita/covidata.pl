@@ -16,6 +16,11 @@ class LocalCrawler(Crawler):
     reports_since = datetime(year=2020, month=3, day=9)
     enable_today = True
 
+    @staticmethod
+    def parse_int(num):
+        """Parse int even if the string contains spaces"""
+        return int(''.join(num.split()))
+
     def fetch(self):
         data = self.get_data()
         regions = dict()
@@ -25,9 +30,10 @@ class LocalCrawler(Crawler):
                 name = 'Polska'
             total_cases = row.get(
                 'Liczba', None) or row.get('Liczba przypadków')
+            total_cases = self.parse_int(total_cases) if total_cases else 0
+
             total_deaths = row.get('Liczba zgonów', 0)
-            total_cases = int(total_cases) if total_cases else 0
-            total_deaths = int(total_deaths) if total_deaths else 0
+            total_deaths = self.parse_int(total_deaths) if total_deaths else 0
 
             row_counter = Counter({
                 'total_cases': total_cases,

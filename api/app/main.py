@@ -1,8 +1,7 @@
 import datetime
 from typing import List
 
-from aiocache import multi_cached, Cache, cached, caches
-from aiocache.serializers import PickleSerializer, JsonSerializer
+from aiocache import cached, caches
 from fastapi import FastAPI, status, HTTPException, Depends, Query, Body
 import uvicorn
 
@@ -235,7 +234,6 @@ async def create_or_update_day_report(
             values=day_report.dict(
                 exclude_unset=True
             )
-
         )
     else:
         query = day_reports.insert().values(
@@ -254,7 +252,7 @@ async def create_or_update_day_report(
             response_model=DayReport)
 async def delete_day_report(region_id: int,
                             date: datetime.date,
-                            username: str = Depends(get_current_user)):  # noqa
+                            username: str = Depends(get_current_user)):
     await database.execute(
         filter_by_day_report(day_reports.delete(), region_id, date))
 
@@ -262,14 +260,14 @@ async def delete_day_report(region_id: int,
 @app.get("/api/v1/downloaded_reports",
          response_model=List[DownloadedReport])
 async def read_downloaded_reports(type: ReportType):
-    """Get a list of reports downloaded from CSSEGISandData by the crawler"""
+    """Get a list of reports downloaded from CSSEGISandData by the crawler."""
     return await get_downloaded_reports(type)
 
 
 @app.post("/api/v1/downloaded_reports", responses={'409': {}})
 async def create_downloaded_report(
         downloaded_report: DownloadedReport,
-        username: str = Depends(get_current_user)):  # noqa
+        username: str = Depends(get_current_user)):
     if await downloaded_report_exists(downloaded_report):
         return JSONResponse(status_code=409)
     await insert_downloaded_report(downloaded_report)
