@@ -5,13 +5,13 @@ Sprawa jest jednak prosta:
 
 **Coronavirus (koronawirus)** - Nazwa gatunków wirusów należących do pewnej grupy (podrodziny Coronavirinae). Swoją nazwę zawdzięczają charakterystycznemu kształtowi, zaobserwowanemu przy oglądaniu go pod mikroskopem elektronowym. 
 
-> W internecie znajdziecie wiele zdjęć wirusa zrobionych za pomocą mikroskopu elektronowego. Kolory pokazane na zdjęciach nie są ich rzeczywistymi kolorami. Odpowiadają jedynie pewnych cechom zmierzonym przez urządzenie w danym punkcie - na przykład różnym typom cząsteczek
+> W internecie znajdziecie wiele zdjęć wirusa zrobionych za pomocą mikroskopu elektronowego. Kolory pokazane na zdjęciach nie są ich rzeczywistymi kolorami. Odpowiadają jedynie pewnym cechom zmierzonym przez urządzenie w danym punkcie - na przykład różnym typom cząsteczek
 
 **SARS-CoV-2** - Można powiedzieć, że to TEN koronawirus, o którym wszyscy mówią. Jest to konkretny gatunek wirusa, który powoduje stan aktualnej pandemii. SARS-CoV-2 to skrótowiec od *Severe Acute Respiratory Syndrome CoronaVirus 2*. Początkowo był on nazwany nCoV-2019 (*new CoronaVirus*), lecz po wykonaniu dokładniejszych badań nazwa została oficjalnie zmieniona.
 
 **COVID-19** - nazwa choroby wywoływanej przez wirusa SARS-CoV-2.
 
-Koronawirusy są bardzo powszechne. Szacuje się, że ich obecność jest przyczyną 10-30% przeziębień. Człowieka dotyka 7 głównych gatunków, z których większość nie jest szczególnie groźna. Wirusy tego rodzaju bardzo szybko mutują, co wywołało stan epidemiczny już 3 razy w XXI wieku. Mowa tu o wirusach SARS (2003), który spowodował ok. 1000 zgonów oraz MERS (2015), który zabił ok. 850 osób. Naukowcy szacują, że pierwsze koronawirusy pojawiły się na Ziemi ok. 11 tysięcy lat temu. 
+Koronawirusy są bardzo powszechne. Szacuje się, że ich obecność jest przyczyną 10-30% przeziębień. Człowieka dotyka 7 głównych gatunków, z których większość nie jest szczególnie groźna. Wirusy tego rodzaju bardzo szybko mutują, co wywołało stan epidemiczny już 3 razy w XXI wieku. Mowa tu o wirusach SARS (2003), który spowodował ok. 1000 zgonów oraz o MERS (2015), który zabił ok. 850 osób. Naukowcy szacują, że pierwsze koronawirusy pojawiły się na Ziemi ok. 11 tysięcy lat temu. 
 
 SARS-CoV-2 znacząco różni się od poprzedników - jest mniej groźny dla zdrowia, za to bardziej zaraźliwy. Ma także dłuższy okres inkubacji niż reszta koronawirusów (jak i w ogóle powszechnych chorób).
 
@@ -32,7 +32,7 @@ R0 jest kluczowym parametrem opisu krzywych opisanych poniżej. Kiedy R0 przekra
 ### Krzywe i ich spłaszczanie
 
 Chyba każdy z nas słyszał w ciągu ostatniego miesiąca o "spłaszczaniu krzywej".
-COVID-19 ma jednak kilka różnych krzywych. Główną krzywą, którą śledzimy jest krzywa zachorowań, której wcale nie da się spłaszczyć, bo jest niemalejąca (chyba że mowa po prostu o obniżeniu liczby infekcji, ale nie to zazwyczaj mamy na myśli mówiąc o "spłaszczaniu krzywej")! Jest to całkowita liczba zachorowań od początku epidemii do danego momentu w czasie. Wykres zachorowań w Polsce na stan 14.04:
+COVID-19 ma jednak kilka różnych krzywych. Główną krzywą, którą śledzimy, jest krzywa zachorowań, której wcale nie da się spłaszczyć, bo jest niemalejąca (chyba że mowa po prostu o obniżeniu liczby infekcji, ale nie to zazwyczaj mamy na myśli mówiąc o "spłaszczaniu krzywej")! Jest to całkowita liczba zachorowań od początku epidemii do danego momentu w czasie. Wykres zachorowań w Polsce na stan 14.04:
 
 ![alt text](https://i.ibb.co/3f5Tqs5/infografika7-1.png)
 
@@ -41,7 +41,7 @@ Badania epidemiologiczne wskazują, że krzywa zachorowań dąży do krzywej log
 
 ![alt text](https://i.ibb.co/Kz7xRnw/iinfografika2.png)
 
-Kolejną krzywą, o której możemy mówić to krzywa wyzdrowień (i analogiczna krzywa zgonów), również dążąca do krzywej logistycznej. Z tych trzech możemy skonstruować krzywą aktywnych zachorowań, przedstawiającą ilość osób chorych w danym dniu. Jest to po prostu różnica całkowitej liczby zachorowań i wyzdrowień lub zgonów dla danego dnia, dąży zatem do różnicy krzywych logistycznych o różnych parametrach.
+Kolejną krzywą, o której możemy mówić, to krzywa wyzdrowień (i analogiczna krzywa zgonów), również dążąca do krzywej logistycznej. Z tych trzech możemy skonstruować krzywą aktywnych zachorowań, przedstawiającą liczbę osób chorych w danym dniu. Jest to po prostu różnica całkowitej liczby zachorowań i wyzdrowień lub zgonów dla danego dnia, dąży zatem do różnicy krzywych logistycznych o różnych parametrach.
 
 Ostatnią ważną krzywą jest dzienna liczba nowych przypadków. Osoby obeznane z analizą matematyczną mogą zauważyć, że jest do zdyskretyzowana pochodna funkcji całkowitych zachorowań po czasie (a raczej funkcji, do której zbiega). Innymi słowy: pokazuje, jak szybko rośnie całkowita liczba zachorowań. Dąży ona do pochodnej funkcji logistycznej.
 
@@ -51,7 +51,7 @@ Prosta odpowiedź brzmi: **wszystkie**.
 
 Przede wszystkim skupiamy się na ostatniej krzywej, czyli przyroście nowych zdiagnozowanych, głównym celem jest jednak spłaszczenie krzywej aktywnych zachorowań. 
 
-Ponieważ system opieki zdrowotnej ma swoje sztywne ograniczenia, takie jak ilość sprzętu medycznego, miejsc w szpitalach czy lekarzy, to po przekroczeniu tej granicy spowodowanym zbyt dużą ilością chorych w danym momencie, szanse na przeżycie choroby u osób, dla których zabrakło środków medycznych drastycznie maleją, rośnie zatem śmiertelność samej choroby w tym regionie (dowiedz się więcej w sekcji *Zagrożenie i śmiertelność*).
+Ponieważ system opieki zdrowotnej ma swoje sztywne ograniczenia, takie jak ilość sprzętu medycznego, miejsc w szpitalach czy lekarzy, to po przekroczeniu tej granicy spowodowanym zbyt dużą liczbą chorych w danym momencie, szanse na przeżycie choroby u osób, dla których zabrakło środków medycznych drastycznie maleją, rośnie zatem śmiertelność samej choroby w tym regionie (dowiedz się więcej w sekcji *Zagrożenie i śmiertelność*).
 
 Jak już wiemy, krzywa aktywnych zachorowań jest różnicą dwóch przesuniętych krzywych logistycznych: krzywej całkowitych zachorowań i przypadków wyleczeń lub zgonów. Są 3 odmienne sposoby, na które jesteśmy w stanie dokonać jej spłaszczenia: zmniejszenie odległości między krzywymi, zmniejszenie ich wysokości lub zmniejszenie ich nachylenia. 
 
@@ -59,7 +59,7 @@ Za wysokość krzywych odpowiada całkowita liczba zarażeń - ciężko podać w
 Za odległość między krzywymi odpowiedzialny jest oczekiwany czas trwania choroby. W zmniejszeniu go mogą pomóc na przykład nowe leki czy sposoby kuracji chorych. Obecnie wielu specjalistów zajmuje się próbą wypłaszczania krzywej w ten sposób, lecz przeciętny obywatel niewiele jest tu w stanie pomóc.
 
 
-**Jest za to w stanie pomóc zmniejszyć nachylenie krzywej - za które odpowiada właśnie dzienna ilość nowych przypadków.**
+**Jest za to w stanie pomóc zmniejszyć nachylenie krzywej - za które odpowiada właśnie dzienna liczba nowych przypadków.**
 
 
 ![alt text](https://i.ibb.co/f9h6cqz/infografika5-2.png)
@@ -85,7 +85,7 @@ Krzywa zachorowań dąży do logistycznej jedynie w warunkach idealnych. Ogranic
 * Niezmienności warunków zewnętrznych
 
 Co to zmienia?
-Otóż każde zamknięty obszar będzie mieć "własną" krzywą zarażeń. Patrząc na obecną sytuację wydaje to się dość oczywiste - we Włoszech jest przecież znacznie więcej zarażeń niż w Polsce w przeliczeniu na mieszkańca. 
+Otóż każdy zamknięty obszar będzie miał "własną" krzywą zarażeń. Patrząc na obecną sytuację wydaje to się dość oczywiste - we Włoszech jest przecież znacznie więcej zarażeń niż w Polsce w przeliczeniu na mieszkańca. 
 
 Przez to, że każdy obszar generuje krzywą o różnych parametrach, a krzywa globalna jest ich sumą, to **nie dąży ona** do krzywej logistycznej.
 
@@ -94,7 +94,7 @@ Przez to, że każdy obszar generuje krzywą o różnych parametrach, a krzywa g
 
 Jednak każdy kraj zajmuje się przede wszystkim spłaszczaniem własnej krzywej oraz ograniczaniem kontaktów z krajami o gorszej sytuacji epidemiologicznej. 
 
-Zmiana warunków zewnętrznych to na przykład restrykcje wprowadzane w danym rejonie, nastrój społeczny czy choćby zmiana pogody. Taka zmiana w trakcie epidemii może wywołać zmianę parametrów opisującej zachorowania funkcji logistycznej, co znacznie utrudnia dokonywanie jakichkolwiek przewidywań, lecz nie wpływa na ogólny trend oraz sposoby przeciwdziałania. 
+Zmiana warunków zewnętrznych to na przykład restrykcje wprowadzane w danym rejonie, nastrój społeczny czy choćby zmiana pogody. Takie okoloczności w trakcie epidemii mogą wywołać zmianę parametrów opisującej zachorowania funkcji logistycznej, co znacznie utrudnia dokonywanie jakichkolwiek przewidywań, lecz nie wpływa na ogólny trend oraz sposoby przeciwdziałania. 
 
 ### Wzrost wykładniczy
 W wielu miejscach możemy znaleźć informację, że pandemia rozwija się wykładniczo. Tutaj postulujemy z kolei, że jest to wzrost logistyczny. Czy to to samo?
