@@ -23,6 +23,8 @@ build_frontend:
     key: ${CI_COMMIT_REF_SLUG}
   only:
     - master
+    changes:
+      - "frontend/*"
   stage: build
   image: docker/compose:alpine-1.25.5
   before_script:
@@ -61,8 +63,7 @@ test-api:
   tags:
     - private-shell
   script:
-    - export DB_PASSWORD=test
-    - docker run $API_TEST_IMAGE sh -c "python -m pytest --cov=. /app/tests/ --cov-report term-missing"
+    - docker run --env DB_PASSWORD=$DB_PASSWORD $API_TEST_IMAGE sh -c "python -m pytest --cov=. /app/tests/ --cov-report term-missing"
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
 release-frontend-image:
   stage: release
