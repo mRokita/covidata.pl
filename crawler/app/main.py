@@ -1,5 +1,7 @@
 from os import environ
 from time import sleep
+
+from httpx import NetworkError
 from loguru import logger
 
 from common import HTTPError
@@ -29,6 +31,8 @@ if __name__ == '__main__':
                     logger.warning(
                         f"{crawler.__name__}: Data not available for {d}...")
                 except HTTPError as e:
+                    logger.error(e)
+                except NetworkError as e:
                     logger.error(e)
         sleep(50)
 
