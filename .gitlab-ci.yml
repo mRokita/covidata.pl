@@ -11,6 +11,9 @@ variables:
   API_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata.pl:api-latest
   CRAWLER_TEST_IMAGE: registry.gitlab.com/mrokita/covidata.pl:crawler-$CI_BUILD_REF_NAME
   CRAWLER_RELEASE_IMAGE: registry.gitlab.com/mrokita/covidata.pl:crawler-latest
+  SERVICE_TOKEN: ""
+  SECRET_KEY: ""
+  DB_PASSWORD: ""
 
 before_script:
   - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
@@ -99,3 +102,4 @@ deploy:
   script:
     - export IMAGE_TAG=latest
     - docker stack deploy --compose-file docker-compose.yml --resolve-image=always --with-registry-auth covidata
+  when: manual

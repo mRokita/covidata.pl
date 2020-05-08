@@ -43,6 +43,10 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      SERVICE_TOKEN: ${SERVICE_TOKEN}
     depends_on:
       - db
       - redis
@@ -58,7 +62,7 @@ services:
     image: postgres:12.2-alpine
     restart: always
     environment:
-      POSTGRES_PASSWORD: ***REMOVED***
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: covidata
       POSTGRES_DB: covidata
     networks:
@@ -69,6 +73,8 @@ services:
     image: "registry.gitlab.com/mrokita/covidata.pl:crawler-${IMAGE_TAG}"
     build:
       context: crawler/
+    environment:
+      SERVICE_TOKEN: ${SERVICE_TOKEN}
     networks:
       - default
     volumes:

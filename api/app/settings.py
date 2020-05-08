@@ -31,11 +31,11 @@ CACHE_CONFIG = {
 CACHE_ALIAS = 'testing' if TESTING else 'default'
 
 DB_USER = 'covidata'
-DB_PASSWORD = '***REMOVED***'
+DB_PASSWORD = config('DB_PASSWORD')
 DB_DATABASE = 'covidata'
 DB_HOST = 'localhost' if STAGE == 'DEBUG' else 'db'
-SECRET_KEY = "***REMOVED***"
-SERVICE_TOKEN = "***REMOVED***"
+SECRET_KEY = config('SECRET_KEY', cast=str)
+SERVICE_TOKEN = config('SERVICE_TOKEN', cast=str)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

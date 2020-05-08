@@ -5,7 +5,7 @@ from typing import Dict, Set, List
 import httpx
 from loguru import logger
 
-from config import API_HOST
+from config import API_HOST, SERVICE_TOKEN
 
 
 class ReportType(str, Enum):
@@ -17,7 +17,7 @@ class Client(httpx.Client):
     def __init__(self):
         super().__init__(
             base_url=f'http://{API_HOST}/api/v1/',
-            headers={'Authorization': 'Bearer ***REMOVED***'}
+            headers={'Authorization': f'Bearer {SERVICE_TOKEN}'}
         )
 
 

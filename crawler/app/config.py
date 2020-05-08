@@ -45,3 +45,4 @@ SKIPPED_GLOBAL_COUNTRIES = [
 
 API_HOST = 'localhost:8000' if environ.get(
     'STAGE', 'PRODUCTION') == 'DEBUG' else 'api'
+SERVICE_TOKEN = environ.get('SERVICE_TOKEN')
