@@ -22,7 +22,7 @@ from alembic.command import upgrade as alembic_upgrade
 from alembic.command import downgrade as alembic_downgrade
 from httpx import AsyncClient
 
-TEST_AUTH_TOKEN = '***REMOVED***'
+TEST_AUTH_TOKEN = environ['SERVICE_TOKEN']
 
 regions_mocked = [
     {'id': 1, 'name': 'Mazowieckie', 'report_type': ReportType.LOCAL},
