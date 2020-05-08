@@ -22,7 +22,8 @@ build_frontend:
   cache:
     key: ${CI_COMMIT_REF_SLUG}
   only:
-    - master
+    refs:
+      - master
     changes:
       - "frontend/*"
   stage: build
