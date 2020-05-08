@@ -15,6 +15,9 @@ docker run -d \
     dvdarias/docker-hoster
 
 # Uruchomienie bazy, crawlera, API etc
+export DB_PASSWORD=password
+export SERVICE_TOKEN=token
+export  SECRET_KEY=key
 sudo docker-compose up --build
 ```
 
