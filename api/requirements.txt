@@ -75,7 +75,7 @@ Tempita==0.5.2
 traitlets==4.3.3
 trio==0.13.0
 urllib3==1.25.8
-uvicorn==0.11.3
+uvicorn==0.11.7
 uvloop==0.14.0
 wcwidth==0.1.9
 websockets==8.1
