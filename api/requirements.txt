@@ -50,7 +50,7 @@ py==1.8.1
 pycountry==19.8.18
 pycparser==2.20
 pydantic==1.4
-Pygments==2.6.1
+Pygments==2.7.4
 PyJWT==1.7.1
 pyparsing==2.4.6
 pytest==5.4.1
