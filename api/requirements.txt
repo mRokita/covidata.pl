@@ -22,7 +22,7 @@ hiredis==1.0.1
 hpack==3.0.0
 hstspreload==2020.3.25
 httptools==0.1.1
-httpx==0.12.1
+httpx==0.23.0
 hyperframe==5.2.0
 idna==2.9
 importlib-metadata==1.5.0
